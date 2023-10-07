@@ -1,0 +1,18 @@
+<div nz-row>
+  <div nz-col [nzSpan]="24">
+    <nz-card
+      [nzLoading]="isLoading"
+      [nzBordered]="false"
+      [nzBodyStyle]="{ padding: '0px' }"
+    >
+      <div nz-row [nzGutter]="[16, 16]">
+        <div nz-col [nzSpan]="16">
+          <app-payment></app-payment>
+        </div>
+        <div nz-col [nzSpan]="8">
+          <app-bill></app-bill>
+        </div>
+      </div>
+    </nz-card>
+  </div>
+</div>
