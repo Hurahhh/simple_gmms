@@ -1,0 +1,14 @@
+{
+  "targets": {
+    "simple-gmms": {
+      "hosting": {
+        "simple-gmms": [
+          "simple-gmms"
+        ]
+      }
+    }
+  },
+  "projects": {
+    "default": "simple-gmms"
+  }
+}
