@@ -1,0 +1,10 @@
+.login-form-button {
+    width: 100%;
+}
+
+.app-logo-container {
+    width: 100%;
+    margin-bottom: 8px;
+    display: flex;
+    justify-content: center;
+}

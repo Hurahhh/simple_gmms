@@ -1,0 +1,11 @@
+nz-header,
+nz-footer {
+  background: #fff;
+  color: #000;
+  height: 15vh;
+}
+
+nz-content {
+  background: #fff;
+  color: #000;
+}
