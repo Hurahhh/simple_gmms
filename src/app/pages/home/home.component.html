@@ -7,7 +7,12 @@
     >
       <div nz-row [nzGutter]="[16, 16]">
         <div nz-col [nzSpan]="16">
-          <app-payment></app-payment>
+          <app-payment
+            [isLoadingTable]="isLoadingTablePayment"
+            [tableScroll]="tablePaymentScroll"
+            [tableRows]="tablePaymentRows"
+            [columnConfigs]="tablePaymentColumnConfigs"
+          ></app-payment>
         </div>
         <div nz-col [nzSpan]="8">
           <app-bill></app-bill>
