@@ -1,0 +1,25 @@
+<nz-layout>
+  <nz-header>
+    <div class="app-header">
+      <span class="right-header">
+        <a nz-dropdown [nzDropdownMenu]="menu" nzTrigger="click">
+          <nz-avatar nzIcon="user"></nz-avatar>
+          {{ userName | nzEllipsis : 7 : "..." }}
+        </a>
+        <nz-dropdown-menu #menu="nzDropdownMenu">
+          <ul nz-menu nzSelectable>
+            <li nz-menu-item (click)="onLogout()">Đăng xuất</li>
+          </ul>
+        </nz-dropdown-menu>
+      </span>
+    </div>
+  </nz-header>
+  <nz-content>
+    <div class="app-content">
+      <router-outlet></router-outlet>
+    </div>
+  </nz-content>
+  <nz-footer>
+    <span>Group Money Management System ©2023 Develop By BinhLD</span>
+  </nz-footer>
+</nz-layout>

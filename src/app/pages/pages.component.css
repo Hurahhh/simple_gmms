@@ -1,0 +1,59 @@
+:host {
+  display: flex;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  min-height: 100%;
+}
+
+/* APP HEADER */
+nz-header {
+  padding: 0;
+}
+
+.app-header {
+  position: relative;
+  height: 64px;
+  padding: 0px;
+  background: #fff;
+  box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
+}
+
+.left-header {
+  position: absolute;
+  left: 24px;
+}
+
+.trigger {
+  font-size: 20px;
+  cursor: pointer;
+  transition: all 0.3s, padding 0s;
+}
+
+.trigger:hover {
+  color: #1890ff;
+}
+
+.right-header {
+  position: absolute;
+  right: 24px;
+}
+
+/* APP CONTENT */
+nz-content {
+  margin: 24px;
+  margin-bottom: 0px;
+}
+
+.app-content {
+  padding: 16px;
+  background: #fff;
+  border-radius: 5px;
+  height: 100%;
+}
+
+/* APP FOOTER */
+nz-footer {
+  text-align: center;
+  height: 64px;
+}
