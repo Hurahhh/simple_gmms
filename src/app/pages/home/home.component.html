@@ -19,6 +19,7 @@
             [users]="users"
             (wantCreatePayment)="createPayment($event)"
             (wantDeletePayment)="deletePayment($event)"
+            (wantViewPayment)="viewPayment($event)"
           ></app-payment>
         </div>
         <div nz-col [nzSpan]="8">
@@ -28,3 +29,22 @@
     </nz-card>
   </div>
 </div>
+<nz-drawer
+  [(nzVisible)]="isVisiblePdfViewer"
+  nzPlacement="top"
+  [nzTitle]="pdfViewerTitle"
+  nzHeight="100vh"
+  (nzOnClose)="isVisiblePdfViewer = false"
+  [nzFooter]="pdfViewerFooter"
+>
+  <ng-container *nzDrawerContent>
+    <div *ngIf="!!pdfDataObjUrl" style="width: 100%; height: 100%">
+      <iframe
+        [src]="pdfDataObjUrl | safe : 'resourceUrl'"
+        style="width: 100%; height: 100%; margin: 0px; padding: 0px"
+      ></iframe>
+    </div>
+  </ng-container>
+
+  <ng-template #pdfViewerFooter> </ng-template>
+</nz-drawer>

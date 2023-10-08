@@ -53,6 +53,7 @@ export class PaymentComponent {
   @Input() columnConfigs: ColumnFilterSorterConfig<Payment> = {};
   @Output() wantSearchPayment = new EventEmitter<SearchPaymentParams>();
   @Output() wantDeletePayment = new EventEmitter<Payment>();
+  @Output() wantViewPayment = new EventEmitter<Payment>();
 
   canDeletePayment(payment: Payment) {
     return payment.status == PAYMENT_STATUS.CREATED;

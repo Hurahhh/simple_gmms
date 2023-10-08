@@ -7,12 +7,14 @@ import {
 import { cloneDeep } from 'lodash';
 import { CommonUtil } from 'src/app/@core/utils/common.util';
 import { Component } from '@angular/core';
+import { format } from 'date-fns';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { Payment, PaymentForCreate } from 'src/app/@core/types/payment.type';
 import { PaymentBusiness } from 'src/app/@core/businesses/payment.business';
 import { Subscription } from 'rxjs';
 import { User } from 'src/app/@core/types/user.type';
 import { UserBusiness } from 'src/app/@core/businesses/user.business';
+import { PdfUtil } from 'src/app/@core/utils/pdf.util';
 
 @Component({
   selector: 'app-home',
@@ -205,4 +207,25 @@ export class HomeComponent {
         this.messageService.error(CommonUtil.COMMON_ERROR_MESSAGE);
       });
   }
+
+  viewPayment(payment: Payment) {
+    this.pdfViewerTitle = `Phiếu chi ${payment.id} - Tạo bởi ${payment.creatorName} - Tạo lúc ${format(payment.createdAt.toDate(), 'dd/MM/yyyy HH:mm:ss')}`;
+    PdfUtil.makePaymentPdf(payment)
+      .then((blob) => {
+        this.pdfDataObjUrl = window.URL.createObjectURL(blob);
+        this.isVisiblePdfViewer = true;
+      })
+      .catch((error) => {
+        console.log(error);
+        this.messageService.error(CommonUtil.COMMON_ERROR_MESSAGE);
+      });
+  }
+
+  /*
+   * PDF VIEWER
+   */
+
+  isVisiblePdfViewer = false;
+  pdfViewerTitle = '';
+  pdfDataObjUrl = '';
 }
