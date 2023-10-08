@@ -1,18 +1,18 @@
 import { AppService } from 'src/app/app.service';
+import { Auth } from '@angular/fire/auth';
 import {
   ColumnFilterSorterConfig,
   SearchPaymentParams,
 } from 'src/app/@core/types/common.type';
+import { cloneDeep } from 'lodash';
+import { CommonUtil } from 'src/app/@core/utils/common.util';
 import { Component } from '@angular/core';
-import { PAYMENT_STATUS } from 'src/app/@core/constants/common.constant';
+import { NzMessageService } from 'ng-zorro-antd/message';
 import { Payment, PaymentForCreate } from 'src/app/@core/types/payment.type';
 import { PaymentBusiness } from 'src/app/@core/businesses/payment.business';
 import { Subscription } from 'rxjs';
 import { User } from 'src/app/@core/types/user.type';
-import { Auth } from '@angular/fire/auth';
-import { NzMessageService } from 'ng-zorro-antd/message';
 import { UserBusiness } from 'src/app/@core/businesses/user.business';
-import { CommonUtil } from 'src/app/@core/utils/common.util';
 
 @Component({
   selector: 'app-home',
@@ -47,7 +47,7 @@ export class HomeComponent {
 
     this.app_h$_sub = this.appService.h$.subscribe((h) => {
       this.tablePaymentScroll = {
-        y: h - 428 + 'px',
+        y: h - 444 + 'px',
       };
     });
 
@@ -60,6 +60,12 @@ export class HomeComponent {
       const initData = await Promise.all([pr1, pr2]);
       this.users = initData[0];
       this.tablePaymentRows = initData[1];
+
+      this.tablePaymentColumnConfigs['creatorName'].filterOptions =
+        this.users.map((u) => ({
+          text: u.userName,
+          value: u.userName,
+        }));
     } catch (error) {
       this.messageService.error(CommonUtil.COMMON_ERROR_MESSAGE);
     } finally {
@@ -135,12 +141,10 @@ export class HomeComponent {
       sortDirections: [],
     },
     status: {
-      showFilter: true,
-      filterMultiple: true,
+      showFilter: false,
+      filterMultiple: false,
       filterOptions: [],
-      filterFunction: (list: PAYMENT_STATUS[], item: Payment) => {
-        return list.some((status) => item.status == status);
-      },
+      filterFunction: null,
       showSort: false,
       sortPriority: -1,
       sortOrder: null,
@@ -177,15 +181,9 @@ export class HomeComponent {
           this.isVisiblePaymentModalForm = false;
           this.messageService.success('Tạo phiếu chi thành công');
 
-          const _payments = JSON.parse(
-            JSON.stringify(this.tablePaymentRows)
-          ) as Payment[];
+          const _payments = cloneDeep(this.tablePaymentRows);
           _payments.push(payment);
           this.tablePaymentRows = _payments;
-
-          // this.tablePaymentColumnConfigs = JSON.parse(
-          //   JSON.stringify(this.tablePaymentColumnConfigs)
-          // );
         }
       });
   }

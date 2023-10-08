@@ -56,7 +56,7 @@ export class PaymentRepository implements BaseRepository<Payment> {
     if (docRef.id) {
       payment.id = docRef.id;
       await this.updateAsync(payment);
-      return payment;
+      return await this.getAsync(docRef.id);
     }
 
     return null;
