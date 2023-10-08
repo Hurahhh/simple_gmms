@@ -14,6 +14,7 @@ import {
 import { User } from 'src/app/@core/types/user.type';
 import { CommonUtil } from 'src/app/@core/utils/common.util';
 import { PAYMENT_STATUS } from 'src/app/@core/constants/common.constant';
+import { startOfDay, endOfDay, differenceInCalendarDays } from 'date-fns';
 
 @Component({
   selector: 'app-payment',
@@ -71,9 +72,11 @@ export class PaymentComponent {
       return;
     }
 
+    const _payFromDate = startOfDay(this.searchForm.value.payFromDate);
+    const _payToDate = endOfDay(this.searchForm.value.payToDate);
     this.wantSearchPayment.emit({
-      payFromDate: this.searchForm.value.payFromDate,
-      payToDate: this.searchForm.value.payToDate,
+      payFromDate: _payFromDate,
+      payToDate: _payToDate,
     });
   }
 
@@ -202,5 +205,9 @@ export class PaymentComponent {
     // emit event
     this.isCreatingPayment = true;
     this.wantCreatePayment.emit(payment);
+  }
+
+  disabledDateAfterToday(current: Date) {
+    return differenceInCalendarDays(current, new Date()) > 0;
   }
 }

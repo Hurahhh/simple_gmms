@@ -4,10 +4,9 @@ import {
   ColumnFilterSorterConfig,
   SearchPaymentParams,
 } from 'src/app/@core/types/common.type';
-import { cloneDeep } from 'lodash';
 import { CommonUtil } from 'src/app/@core/utils/common.util';
-import { Component } from '@angular/core';
-import { format } from 'date-fns';
+import { Component, ViewChild } from '@angular/core';
+import { format, startOfMonth, endOfMonth } from 'date-fns';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { Payment, PaymentForCreate } from 'src/app/@core/types/payment.type';
 import { PaymentBusiness } from 'src/app/@core/businesses/payment.business';
@@ -15,6 +14,7 @@ import { Subscription } from 'rxjs';
 import { User } from 'src/app/@core/types/user.type';
 import { UserBusiness } from 'src/app/@core/businesses/user.business';
 import { PdfUtil } from 'src/app/@core/utils/pdf.util';
+import { PaymentComponent } from './payment/payment.component';
 
 @Component({
   selector: 'app-home',
@@ -31,17 +31,8 @@ export class HomeComponent {
     private userBusiness: UserBusiness,
     private paymentBusiness: PaymentBusiness
   ) {
-    const now = new Date();
-    this.initPayFromDate = new Date(
-      now.getFullYear(),
-      now.getMonth(),
-      1,
-      0,
-      0,
-      0,
-      0
-    );
-    this.initPayToDate = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+    this.initPayFromDate = startOfMonth(new Date());
+    this.initPayToDate = endOfMonth(new Date());
   }
 
   async ngOnInit(): Promise<void> {
@@ -82,6 +73,9 @@ export class HomeComponent {
   /*
    * PAYMENTS
    */
+
+  @ViewChild(PaymentComponent)
+  private appPaymentComponent!: PaymentComponent;
 
   // - Table
   initPayFromDate!: Date;
@@ -183,24 +177,18 @@ export class HomeComponent {
         if (!!payment) {
           this.isVisiblePaymentModalForm = false;
           this.messageService.success('Tạo phiếu chi thành công');
-
-          const _payments = cloneDeep(this.tablePaymentRows);
-          _payments.push(payment);
-          this.tablePaymentRows = _payments;
+          this.appPaymentComponent.onSearchPayments();
         }
       });
   }
 
   deletePayment(payment: Payment) {
+    this.isLoadingTablePayment = true;
     this.paymentBusiness
       .deletePayment(payment.id!)
       .then(() => {
         this.messageService.success('Xóa phiếu chi thành công');
-
-        const _payments = cloneDeep(this.tablePaymentRows);
-        const i = _payments.findIndex((p) => p.id == payment.id);
-        _payments.splice(i, 1);
-        this.tablePaymentRows = _payments;
+        this.appPaymentComponent.onSearchPayments();
       })
       .catch((error) => {
         console.log(error);
@@ -209,7 +197,9 @@ export class HomeComponent {
   }
 
   viewPayment(payment: Payment) {
-    this.pdfViewerTitle = `Phiếu chi ${payment.id} - Tạo bởi ${payment.creatorName} - Tạo lúc ${format(payment.createdAt.toDate(), 'dd/MM/yyyy HH:mm:ss')}`;
+    this.pdfViewerTitle = `Phiếu chi ${payment.id} - Tạo bởi ${
+      payment.creatorName
+    } - Tạo lúc ${format(payment.createdAt.toDate(), 'dd/MM/yyyy HH:mm:ss')}`;
     PdfUtil.makePaymentPdf(payment)
       .then((blob) => {
         this.pdfDataObjUrl = window.URL.createObjectURL(blob);
