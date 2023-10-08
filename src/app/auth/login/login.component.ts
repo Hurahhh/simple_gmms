@@ -44,6 +44,7 @@ export class LoginComponent implements OnInit {
           this.router.navigate(['/']);
         })
         .catch((error) => {
+          console.log(error);
           this.messageService.create('error', 'Đăng nhập thất bại!');
         })
         .finally(() => {

@@ -18,10 +18,16 @@ export class PaymentBusiness {
       throw new Error('malformed params');
     }
 
-    return await this.paymentRepository.findByPaymentAtRangeAsync(
+    const payments = await this.paymentRepository.findByPaymentAtRangeAsync(
       Timestamp.fromDate(prms.payFromDate),
       Timestamp.fromDate(prms.payToDate)
     );
+
+    return payments
+      .filter((p) => p.isActive)
+      .sort((a, b) => {
+        return a.paymentAt.toMillis() - b.paymentAt.toMillis();
+      });
   }
 
   async createPayment(dto: PaymentForCreate, creatorId: string) {
@@ -53,5 +59,14 @@ export class PaymentBusiness {
     } as Payment;
 
     return await this.paymentRepository.addAsync(payment);
+  }
+
+  async deletePayment(paymentId: string) {
+    const payment = await this.paymentRepository.getAsync(paymentId);
+    if (!payment) {
+      throw new Error('nullable payment');
+    }
+    payment.isActive = false;
+    await this.paymentRepository.updateAsync(payment);
   }
 }

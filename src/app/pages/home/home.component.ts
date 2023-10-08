@@ -160,7 +160,8 @@ export class HomeComponent {
       .then((payments) => {
         this.tablePaymentRows = payments;
       })
-      .catch((eror) => {
+      .catch((error) => {
+        console.log(error);
         this.messageService.error(CommonUtil.COMMON_ERROR_MESSAGE);
       })
       .finally(() => {
@@ -185,6 +186,23 @@ export class HomeComponent {
           _payments.push(payment);
           this.tablePaymentRows = _payments;
         }
+      });
+  }
+
+  deletePayment(payment: Payment) {
+    this.paymentBusiness
+      .deletePayment(payment.id!)
+      .then(() => {
+        this.messageService.success('Xóa phiếu chi thành công');
+
+        const _payments = cloneDeep(this.tablePaymentRows);
+        const i = _payments.findIndex((p) => p.id == payment.id);
+        _payments.splice(i, 1);
+        this.tablePaymentRows = _payments;
+      })
+      .catch((error) => {
+        console.log(error);
+        this.messageService.error(CommonUtil.COMMON_ERROR_MESSAGE);
       });
   }
 }

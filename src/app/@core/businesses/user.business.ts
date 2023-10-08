@@ -7,6 +7,8 @@ export class UserBusiness {
 
   async getAllUsers() {
     const users = await this.userRepository.getAllAsync();
-    return users.sort((a, b) => a.userName.localeCompare(b.userName));
+    return users
+      .filter((u) => u.isActive)
+      .sort((a, b) => a.userName.localeCompare(b.userName));
   }
 }

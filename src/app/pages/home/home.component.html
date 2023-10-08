@@ -18,6 +18,7 @@
             [(isVisibleModalForm)]="isVisiblePaymentModalForm"
             [users]="users"
             (wantCreatePayment)="createPayment($event)"
+            (wantDeletePayment)="deletePayment($event)"
           ></app-payment>
         </div>
         <div nz-col [nzSpan]="8">

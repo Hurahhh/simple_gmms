@@ -52,9 +52,28 @@ export class PaymentComponent {
   @Input() tableRows: Payment[] = [];
   @Input() columnConfigs: ColumnFilterSorterConfig<Payment> = {};
   @Output() wantSearchPayment = new EventEmitter<SearchPaymentParams>();
+  @Output() wantDeletePayment = new EventEmitter<Payment>();
 
   canDeletePayment(payment: Payment) {
     return payment.status == PAYMENT_STATUS.CREATED;
+  }
+
+  onSearchPayments() {
+    // validate form
+    if (this.searchForm.invalid) {
+      Object.values(this.searchForm.controls).forEach((c) => {
+        if (c.invalid) {
+          c.markAsDirty();
+          c.updateValueAndValidity({ onlySelf: true });
+        }
+      });
+      return;
+    }
+
+    this.wantSearchPayment.emit({
+      payFromDate: this.searchForm.value.payFromDate,
+      payToDate: this.searchForm.value.payToDate,
+    });
   }
 
   /*
@@ -182,25 +201,5 @@ export class PaymentComponent {
     // emit event
     this.isCreatingPayment = true;
     this.wantCreatePayment.emit(payment);
-  }
-
-  onDeletePayment(payment: Payment) {}
-
-  onSearchPayments() {
-    // validate form
-    if (this.searchForm.invalid) {
-      Object.values(this.searchForm.controls).forEach((c) => {
-        if (c.invalid) {
-          c.markAsDirty();
-          c.updateValueAndValidity({ onlySelf: true });
-        }
-      });
-      return;
-    }
-
-    this.wantSearchPayment.emit({
-      payFromDate: this.searchForm.value.payFromDate,
-      payToDate: this.searchForm.value.payToDate,
-    });
   }
 }

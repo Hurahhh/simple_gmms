@@ -31,6 +31,7 @@ export class PagesComponent implements OnInit {
         this.router.navigate(['/auth/login']);
       })
       .catch((error) => {
+        console.log(error);
         this.messageService.create('error', CommonUtil.COMMON_ERROR_MESSAGE);
       });
   }
