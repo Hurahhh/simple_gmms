@@ -8,10 +8,13 @@
       <div nz-row [nzGutter]="[16, 16]">
         <div nz-col [nzSpan]="16">
           <app-payment
+            [initPayFromDate]="initPayFromDate"
+            [initPayToDate]="initPayToDate"
             [isLoadingTable]="isLoadingTablePayment"
             [tableScroll]="tablePaymentScroll"
             [tableRows]="tablePaymentRows"
             [columnConfigs]="tablePaymentColumnConfigs"
+            (wantSearchPayment)="searchPayment($event)"
             [(isVisibleModalForm)]="isVisiblePaymentModalForm"
             [users]="users"
             (wantCreatePayment)="createPayment($event)"

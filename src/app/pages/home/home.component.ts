@@ -1,5 +1,8 @@
 import { AppService } from 'src/app/app.service';
-import { ColumnFilterSorterConfig } from 'src/app/@core/types/common.type';
+import {
+  ColumnFilterSorterConfig,
+  SearchPaymentParams,
+} from 'src/app/@core/types/common.type';
 import { Component } from '@angular/core';
 import { PAYMENT_STATUS } from 'src/app/@core/constants/common.constant';
 import { Payment, PaymentForCreate } from 'src/app/@core/types/payment.type';
@@ -25,7 +28,19 @@ export class HomeComponent {
     private appService: AppService,
     private userBusiness: UserBusiness,
     private paymentBusiness: PaymentBusiness
-  ) {}
+  ) {
+    const now = new Date();
+    this.initPayFromDate = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      1,
+      0,
+      0,
+      0,
+      0
+    );
+    this.initPayToDate = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+  }
 
   async ngOnInit(): Promise<void> {
     this.isLoading = true;
@@ -37,7 +52,14 @@ export class HomeComponent {
     });
 
     try {
-      this.users = await this.userBusiness.getAllUsers();
+      const pr1 = this.userBusiness.getAllUsers();
+      const pr2 = this.paymentBusiness.searchPayments({
+        payFromDate: this.initPayFromDate,
+        payToDate: this.initPayToDate,
+      });
+      const initData = await Promise.all([pr1, pr2]);
+      this.users = initData[0];
+      this.tablePaymentRows = initData[1];
     } catch (error) {
       this.messageService.error(CommonUtil.COMMON_ERROR_MESSAGE);
     } finally {
@@ -53,6 +75,9 @@ export class HomeComponent {
    * PAYMENTS
    */
 
+  // - Table
+  initPayFromDate!: Date;
+  initPayToDate!: Date;
   isLoadingTablePayment = false;
   tablePaymentScroll: { x?: string; y?: string } = {};
   tablePaymentRows: Payment[] = [];
@@ -123,6 +148,23 @@ export class HomeComponent {
       sortDirections: [],
     },
   };
+
+  searchPayment(prms: SearchPaymentParams) {
+    this.isLoadingTablePayment = true;
+    this.paymentBusiness
+      .searchPayments(prms)
+      .then((payments) => {
+        this.tablePaymentRows = payments;
+      })
+      .catch((eror) => {
+        this.messageService.error(CommonUtil.COMMON_ERROR_MESSAGE);
+      })
+      .finally(() => {
+        this.isLoadingTablePayment = false;
+      });
+  }
+
+  // - Modal
   isVisiblePaymentModalForm = false;
   users: User[] = [];
   isCreatingPayment = false;
@@ -134,6 +176,16 @@ export class HomeComponent {
         if (!!payment) {
           this.isVisiblePaymentModalForm = false;
           this.messageService.success('Tạo phiếu chi thành công');
+
+          const _payments = JSON.parse(
+            JSON.stringify(this.tablePaymentRows)
+          ) as Payment[];
+          _payments.push(payment);
+          this.tablePaymentRows = _payments;
+
+          // this.tablePaymentColumnConfigs = JSON.parse(
+          //   JSON.stringify(this.tablePaymentColumnConfigs)
+          // );
         }
       });
   }

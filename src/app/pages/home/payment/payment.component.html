@@ -23,7 +23,7 @@
       </nz-form-item>
       <nz-form-item *nzSpaceItem>
         <nz-form-control>
-          <button nz-button nzType="primary">
+          <button nz-button nzType="primary" (click)="onSearchPayments()">
             <span nz-icon nzType="search"></span>
             Tìm kiếm
           </button>
@@ -140,19 +140,35 @@
             <nz-tag [nzColor]="paymentTag.color">{{ paymentTag.text }}</nz-tag>
           </ng-container>
         </td>
-        <td nzAlign="center" nzRight class="operation">
-          <button nz-button nzType="primary" nzShape="circle" nzSize="small">
-            <span nz-icon nzType="eye" nzTheme="outline"></span>
-          </button>
-          <button
-            nz-button
-            nzType="primary"
-            nzShape="circle"
-            nzSize="small"
-            nzDanger
-          >
-            <span nz-icon nzType="delete" nzTheme="outline"></span>
-          </button>
+        <td nzAlign="center" nzRight>
+          <nz-space>
+            <button
+              nz-button
+              nzType="primary"
+              nzShape="circle"
+              nzSize="small"
+              *nzSpaceItem
+            >
+              <span nz-icon nzType="eye" nzTheme="outline"></span>
+            </button>
+            <button
+              nz-button
+              nzType="primary"
+              nzShape="circle"
+              nzSize="small"
+              nzDanger
+              *nzSpaceItem
+              [disabled]="!canDeletePayment(data)"
+              nz-tooltip
+              nzTooltipTitle="Không thể xóa phiếu đã quyết toán"
+              [nzTooltipTrigger]="canDeletePayment(data) ? null : 'hover'"
+              nz-popconfirm
+              nzPopconfirmTitle="Xóa phiếu?"
+              (nzOnConfirm)="onDeletePayment(data)"
+            >
+              <span nz-icon nzType="delete" nzTheme="outline"></span>
+            </button>
+          </nz-space>
         </td>
       </tr>
     </tbody>

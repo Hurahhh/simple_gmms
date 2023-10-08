@@ -19,12 +19,14 @@ import { NzLayoutModule } from 'ng-zorro-antd/layout';
 import { NzMessageModule } from 'ng-zorro-antd/message';
 import { NzModalModule } from 'ng-zorro-antd/modal';
 import { NzPipesModule } from 'ng-zorro-antd/pipes';
+import { NzPopconfirmModule } from 'ng-zorro-antd/popconfirm';
 import { NzSelectModule } from 'ng-zorro-antd/select';
 import { NzSpaceModule } from 'ng-zorro-antd/space';
 import { NzSpinModule } from 'ng-zorro-antd/spin';
 import { NzTableModule } from 'ng-zorro-antd/table';
 import { NzTagModule } from 'ng-zorro-antd/tag';
 import { NzTimePickerModule } from 'ng-zorro-antd/time-picker';
+import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
 import { PagesComponent } from './pages.component';
 import { PagesGuardService } from './pages-guard.service';
 import { PaymentComponent } from './home/payment/payment.component';
@@ -70,12 +72,14 @@ const routes: Routes = [
     NzMessageModule,
     NzModalModule,
     NzPipesModule,
+    NzPopconfirmModule,
     NzSelectModule,
     NzSpaceModule,
     NzSpinModule,
     NzTableModule,
     NzTagModule,
     NzTimePickerModule,
+    NzToolTipModule,
     ReactiveFormsModule,
     RouterModule.forChild(routes),
   ],

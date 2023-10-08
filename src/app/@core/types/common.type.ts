@@ -24,3 +24,8 @@ export type Tag = {
   text: string;
   color: TAG_COLOR;
 };
+
+export type SearchPaymentParams = {
+  payFromDate: Date;
+  payToDate: Date;
+};

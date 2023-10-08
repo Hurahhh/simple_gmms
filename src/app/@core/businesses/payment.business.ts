@@ -4,6 +4,7 @@ import { Payment, PaymentForCreate } from '../types/payment.type';
 import { PaymentRepository } from '../repositories/payment.repository';
 import { Timestamp, serverTimestamp } from '@angular/fire/firestore';
 import { UserRepository } from '../repositories/user.repository';
+import { SearchPaymentParams } from '../types/common.type';
 
 @Injectable()
 export class PaymentBusiness {
@@ -12,14 +13,14 @@ export class PaymentBusiness {
     private userRepository: UserRepository
   ) {}
 
-  async searchPayments(fromDate: Date, toDate: Date) {
-    if (fromDate.getTime() > toDate.getTime()) {
+  async searchPayments(prms: SearchPaymentParams) {
+    if (prms.payFromDate.getTime() > prms.payToDate.getTime()) {
       throw new Error('malformed params');
     }
 
     return await this.paymentRepository.findByPaymentAtRangeAsync(
-      Timestamp.fromDate(fromDate),
-      Timestamp.fromDate(toDate)
+      Timestamp.fromDate(prms.payFromDate),
+      Timestamp.fromDate(prms.payToDate)
     );
   }
 

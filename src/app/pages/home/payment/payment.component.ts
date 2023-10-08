@@ -7,9 +7,13 @@ import {
 } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Payment, PaymentForCreate } from 'src/app/@core/types/payment.type';
-import { ColumnFilterSorterConfig } from 'src/app/@core/types/common.type';
+import {
+  ColumnFilterSorterConfig,
+  SearchPaymentParams,
+} from 'src/app/@core/types/common.type';
 import { User } from 'src/app/@core/types/user.type';
 import { CommonUtil } from 'src/app/@core/utils/common.util';
+import { PAYMENT_STATUS } from 'src/app/@core/constants/common.constant';
 
 @Component({
   selector: 'app-payment',
@@ -20,12 +24,9 @@ export class PaymentComponent {
   constructor(private fb: FormBuilder) {}
 
   ngOnInit(): void {
-    const now = new Date();
-    const fromDate = new Date(now.getFullYear(), now.getMonth(), 1, 0, 0, 0, 0);
-    const toDate = new Date(now.getFullYear(), now.getMonth() + 1, 0);
     this.searchForm = this.fb.group({
-      payFromDate: [fromDate, [Validators.required]],
-      payToDate: [toDate, [Validators.required]],
+      payFromDate: [this.initPayFromDate, [Validators.required]],
+      payToDate: [this.initPayToDate, [Validators.required]],
     });
     this.initModal();
   }
@@ -44,10 +45,17 @@ export class PaymentComponent {
    */
 
   searchForm!: FormGroup;
+  @Input() initPayFromDate = new Date();
+  @Input() initPayToDate = new Date();
   @Input() isLoadingTable = false;
   @Input() tableScroll: { x?: string; y?: string } = {};
   @Input() tableRows: Payment[] = [];
   @Input() columnConfigs: ColumnFilterSorterConfig<Payment> = {};
+  @Output() wantSearchPayment = new EventEmitter<SearchPaymentParams>();
+
+  canDeletePayment(payment: Payment) {
+    return payment.status == PAYMENT_STATUS.CREATED;
+  }
 
   /*
    * MODAL
@@ -174,5 +182,25 @@ export class PaymentComponent {
     // emit event
     this.isCreatingPayment = true;
     this.wantCreatePayment.emit(payment);
+  }
+
+  onDeletePayment(payment: Payment) {}
+
+  onSearchPayments() {
+    // validate form
+    if (this.searchForm.invalid) {
+      Object.values(this.searchForm.controls).forEach((c) => {
+        if (c.invalid) {
+          c.markAsDirty();
+          c.updateValueAndValidity({ onlySelf: true });
+        }
+      });
+      return;
+    }
+
+    this.wantSearchPayment.emit({
+      payFromDate: this.searchForm.value.payFromDate,
+      payToDate: this.searchForm.value.payToDate,
+    });
   }
 }
