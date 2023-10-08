@@ -12,6 +12,9 @@
             [tableScroll]="tablePaymentScroll"
             [tableRows]="tablePaymentRows"
             [columnConfigs]="tablePaymentColumnConfigs"
+            [(isVisibleModalForm)]="isVisiblePaymentModalForm"
+            [users]="users"
+            (wantCreatePayment)="createPayment($event)"
           ></app-payment>
         </div>
         <div nz-col [nzSpan]="8">

@@ -1,9 +1,15 @@
-import { Component } from '@angular/core';
-import { Subscription } from 'rxjs';
-import { PAYMENT_STATUS } from 'src/app/@core/constants/common.constant';
-import { ColumnFilterSorterConfig } from 'src/app/@core/types/common.type';
-import { Payment } from 'src/app/@core/types/payment.type';
 import { AppService } from 'src/app/app.service';
+import { ColumnFilterSorterConfig } from 'src/app/@core/types/common.type';
+import { Component } from '@angular/core';
+import { PAYMENT_STATUS } from 'src/app/@core/constants/common.constant';
+import { Payment, PaymentForCreate } from 'src/app/@core/types/payment.type';
+import { PaymentBusiness } from 'src/app/@core/businesses/payment.business';
+import { Subscription } from 'rxjs';
+import { User } from 'src/app/@core/types/user.type';
+import { Auth } from '@angular/fire/auth';
+import { NzMessageService } from 'ng-zorro-antd/message';
+import { UserBusiness } from 'src/app/@core/businesses/user.business';
+import { CommonUtil } from 'src/app/@core/utils/common.util';
 
 @Component({
   selector: 'app-home',
@@ -13,19 +19,30 @@ export class HomeComponent {
   isLoading = false;
   app_h$_sub = new Subscription();
 
-  constructor(private appService: AppService) {}
+  constructor(
+    private auth: Auth,
+    private messageService: NzMessageService,
+    private appService: AppService,
+    private userBusiness: UserBusiness,
+    private paymentBusiness: PaymentBusiness
+  ) {}
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
     this.isLoading = true;
-    setTimeout(() => {
-      this.isLoading = false;
-    }, 1000);
 
     this.app_h$_sub = this.appService.h$.subscribe((h) => {
       this.tablePaymentScroll = {
         y: h - 428 + 'px',
       };
     });
+
+    try {
+      this.users = await this.userBusiness.getAllUsers();
+    } catch (error) {
+      this.messageService.error(CommonUtil.COMMON_ERROR_MESSAGE);
+    } finally {
+      this.isLoading = false;
+    }
   }
 
   ngOnDestroy(): void {
@@ -33,10 +50,9 @@ export class HomeComponent {
   }
 
   /*
-   *
    * PAYMENTS
-   *
    */
+
   isLoadingTablePayment = false;
   tablePaymentScroll: { x?: string; y?: string } = {};
   tablePaymentRows: Payment[] = [];
@@ -63,7 +79,7 @@ export class HomeComponent {
       sortPriority: false,
       sortOrder: null,
       sortFunction: (a: Payment, b: Payment) => {
-        return a.createdAt.getTime() - b.createdAt.getTime();
+        return a.createdAt.toMillis() - b.createdAt.toMillis();
       },
       sortDirections: [],
     },
@@ -76,7 +92,7 @@ export class HomeComponent {
       sortPriority: false,
       sortOrder: null,
       sortFunction: (a: Payment, b: Payment) => {
-        return a.paymentAt.getTime() - b.paymentAt.getTime();
+        return a.paymentAt.toMillis() - b.paymentAt.toMillis();
       },
       sortDirections: [],
     },
@@ -107,4 +123,18 @@ export class HomeComponent {
       sortDirections: [],
     },
   };
+  isVisiblePaymentModalForm = false;
+  users: User[] = [];
+  isCreatingPayment = false;
+
+  createPayment(dto: PaymentForCreate) {
+    this.paymentBusiness
+      .createPayment(dto, this.auth.currentUser!.uid)
+      .then((payment) => {
+        if (!!payment) {
+          this.isVisiblePaymentModalForm = false;
+          this.messageService.success('Tạo phiếu chi thành công');
+        }
+      });
+  }
 }

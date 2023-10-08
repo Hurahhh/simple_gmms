@@ -8,16 +8,23 @@ import { NzAvatarModule } from 'ng-zorro-antd/avatar';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzCardModule } from 'ng-zorro-antd/card';
 import { NzDatePickerModule } from 'ng-zorro-antd/date-picker';
+import { NzDrawerModule } from 'ng-zorro-antd/drawer';
 import { NzDropDownModule } from 'ng-zorro-antd/dropdown';
 import { NzFormModule } from 'ng-zorro-antd/form';
 import { NzGridModule } from 'ng-zorro-antd/grid';
 import { NzIconModule } from 'ng-zorro-antd/icon';
+import { NzInputModule } from 'ng-zorro-antd/input';
+import { NzInputNumberModule } from 'ng-zorro-antd/input-number';
 import { NzLayoutModule } from 'ng-zorro-antd/layout';
+import { NzMessageModule } from 'ng-zorro-antd/message';
+import { NzModalModule } from 'ng-zorro-antd/modal';
 import { NzPipesModule } from 'ng-zorro-antd/pipes';
 import { NzSelectModule } from 'ng-zorro-antd/select';
 import { NzSpaceModule } from 'ng-zorro-antd/space';
+import { NzSpinModule } from 'ng-zorro-antd/spin';
 import { NzTableModule } from 'ng-zorro-antd/table';
 import { NzTagModule } from 'ng-zorro-antd/tag';
+import { NzTimePickerModule } from 'ng-zorro-antd/time-picker';
 import { PagesComponent } from './pages.component';
 import { PagesGuardService } from './pages-guard.service';
 import { PaymentComponent } from './home/payment/payment.component';
@@ -52,16 +59,23 @@ const routes: Routes = [
     NzButtonModule,
     NzCardModule,
     NzDatePickerModule,
+    NzDrawerModule,
     NzDropDownModule,
     NzFormModule,
     NzGridModule,
     NzIconModule,
+    NzInputModule,
+    NzInputNumberModule,
     NzLayoutModule,
+    NzMessageModule,
+    NzModalModule,
     NzPipesModule,
     NzSelectModule,
     NzSpaceModule,
+    NzSpinModule,
     NzTableModule,
     NzTagModule,
+    NzTimePickerModule,
     ReactiveFormsModule,
     RouterModule.forChild(routes),
   ],

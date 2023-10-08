@@ -3,11 +3,19 @@ import { NzIconModule } from 'ng-zorro-antd/icon';
 
 import {
   LockOutline,
+  MinusOutline,
   PlusOutline,
+  RetweetOutline,
   UserOutline,
 } from '@ant-design/icons-angular/icons';
 
-const icons = [LockOutline, PlusOutline, UserOutline];
+const icons = [
+  LockOutline,
+  MinusOutline,
+  PlusOutline,
+  RetweetOutline,
+  UserOutline,
+];
 
 @NgModule({
   imports: [NzIconModule.forChild(icons)],
