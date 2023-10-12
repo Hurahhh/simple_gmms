@@ -1,20 +1,22 @@
-import { AppService } from 'src/app/app.service';
-import { Auth } from '@angular/fire/auth';
+import {AppService} from 'src/app/app.service';
+import {Auth} from '@angular/fire/auth';
 import {
   ColumnFilterSorterConfig,
   SearchPaymentParams,
 } from 'src/app/@core/types/common.type';
-import { CommonUtil } from 'src/app/@core/utils/common.util';
-import { Component, ViewChild } from '@angular/core';
-import { format, startOfMonth, endOfMonth } from 'date-fns';
-import { NzMessageService } from 'ng-zorro-antd/message';
-import { Payment, PaymentForCreate } from 'src/app/@core/types/payment.type';
-import { PaymentBusiness } from 'src/app/@core/businesses/payment.business';
-import { Subscription } from 'rxjs';
-import { User } from 'src/app/@core/types/user.type';
-import { UserBusiness } from 'src/app/@core/businesses/user.business';
-import { PdfUtil } from 'src/app/@core/utils/pdf.util';
-import { PaymentComponent } from './payment/payment.component';
+import {CommonUtil} from 'src/app/@core/utils/common.util';
+import {Component, ViewChild} from '@angular/core';
+import {format, startOfMonth, endOfMonth} from 'date-fns';
+import {NzMessageService} from 'ng-zorro-antd/message';
+import {Payment, PaymentForCreate} from 'src/app/@core/types/payment.type';
+import {PaymentBusiness} from 'src/app/@core/businesses/payment.business';
+import {Subscription} from 'rxjs';
+import {User} from 'src/app/@core/types/user.type';
+import {UserBusiness} from 'src/app/@core/businesses/user.business';
+import {PdfUtil} from 'src/app/@core/utils/pdf.util';
+import {PaymentComponent} from './payment/payment.component';
+import {Bill} from "../../@core/types/bill.type";
+import {BillComponent} from "./bill/bill.component";
 
 @Component({
   selector: 'app-home',
@@ -40,6 +42,9 @@ export class HomeComponent {
 
     this.app_h$_sub = this.appService.h$.subscribe((h) => {
       this.tablePaymentScroll = {
+        y: h - 444 + 'px',
+      };
+      this.tableBillScroll = {
         y: h - 444 + 'px',
       };
     });
@@ -210,6 +215,62 @@ export class HomeComponent {
         this.messageService.error(CommonUtil.COMMON_ERROR_MESSAGE);
       });
   }
+
+  /*
+   * PAYMENTS
+   */
+
+  @ViewChild(BillComponent)
+  private appBillComponent!: BillComponent;
+
+  // - Table
+  initCreateFromDate!: Date;
+  initCreateToDate!: Date;
+  isLoadingTableBill = false;
+  tableBillScroll: { x?: string; y?: string } = {};
+  tableBillRows: Bill[] = [];
+  tableBillColumnConfigs: ColumnFilterSorterConfig<Bill> = {
+    creatorName: {
+      showFilter: true,
+      filterMultiple: true,
+      filterOptions: [],
+      filterFunction: (list: string[], item: Bill) => {
+        return list.some((name) => item.creatorName.indexOf(name) !== -1);
+      },
+      showSort: false,
+      sortPriority: false,
+      sortOrder: null,
+      sortFunction: null,
+      sortDirections: [],
+    },
+    createdAt: {
+      showFilter: false,
+      filterMultiple: false,
+      filterOptions: [],
+      filterFunction: null,
+      showSort: true,
+      sortPriority: false,
+      sortOrder: null,
+      sortFunction: (a: Bill, b: Bill) => {
+        return a.createdAt.toMillis() - b.createdAt.toMillis();
+      },
+      sortDirections: [],
+    },
+    totalAmount: {
+      showFilter: false,
+      filterMultiple: false,
+      filterOptions: [],
+      filterFunction: null,
+      showSort: true,
+      sortPriority: false,
+      sortOrder: null,
+      sortFunction: (a: Bill, b: Bill) => {
+        return a.totalAmount - b.totalAmount;
+      },
+      sortDirections: [],
+    },
+  };
+
 
   /*
    * PDF VIEWER

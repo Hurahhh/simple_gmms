@@ -29,3 +29,8 @@ export type SearchPaymentParams = {
   payFromDate: Date;
   payToDate: Date;
 };
+
+export type SearchBillParams = {
+  createFromDate: Date;
+  createToDate: Date;
+};

@@ -1,4 +1,126 @@
-<nz-card nzTitle="Quyết toán" [nzExtra]="extraTemplate"></nz-card>
+<nz-card nzTitle="Quyết toán" [nzExtra]="extraTemplate">
+    <form nz-form nzLayout="vertical" [formGroup]="searchForm">
+    <nz-space nzSize="large" nzAlign="end">
+      <nz-form-item *nzSpaceItem>
+        <nz-form-label>Tạo từ ngày</nz-form-label>
+        <nz-form-control nzErrorTip="Hãy chọn từ ngày!">
+          <nz-date-picker
+            nzPlaceHolder="Chọn từ ngày"
+            formControlName="payFromDate"
+            nzFormat="dd/MM/yyyy"
+          ></nz-date-picker>
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item *nzSpaceItem>
+        <nz-form-label>Tạo tới ngày</nz-form-label>
+        <nz-form-control nzErrorTip="Hãy chọn đến ngày!">
+          <nz-date-picker
+            nzPlaceHolder="Chọn đến ngày"
+            formControlName="payToDate"
+            nzFormat="dd/MM/yyyy"
+          ></nz-date-picker>
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item *nzSpaceItem>
+        <nz-form-control>
+          <button nz-button nzType="primary" (click)="onSearchBills()">
+            <span nz-icon nzType="search"></span>
+            Tìm kiếm
+          </button>
+        </nz-form-control>
+      </nz-form-item>
+    </nz-space>
+  </form>
+  <nz-table
+    #table
+    nzBordered
+    nzShowSizeChanger
+    nzSize="small"
+    [nzLoading]="isLoadingTable"
+    [nzScroll]="tableScroll"
+    [nzPageSize]="20"
+    [nzData]="tableRows"
+  >
+    <thead>
+    <tr>
+      <th nzAlign="center" nzWidth="50px">STT</th>
+      <th
+        nzAlign="center"
+        nzWidth="200px"
+        [nzShowFilter]="columnConfigs['creatorName'].showFilter"
+        [nzFilterMultiple]="columnConfigs['creatorName'].filterMultiple"
+        [nzFilters]="columnConfigs['creatorName'].filterOptions"
+        [nzFilterFn]="columnConfigs['creatorName'].filterFunction"
+        [nzShowSort]="columnConfigs['creatorName'].showSort"
+        [nzSortPriority]="columnConfigs['creatorName'].sortPriority"
+        [nzSortOrder]="columnConfigs['creatorName'].sortOrder"
+        [nzSortFn]="columnConfigs['creatorName'].sortFunction"
+        [nzSortDirections]="columnConfigs['creatorName'].sortDirections"
+      >
+        Người tạo
+      </th>
+      <th
+        nzAlign="center"
+        nzWidth="200px"
+        [nzShowFilter]="columnConfigs['createdAt'].showFilter"
+        [nzFilterMultiple]="columnConfigs['createdAt'].filterMultiple"
+        [nzFilters]="columnConfigs['createdAt'].filterOptions"
+        [nzFilterFn]="columnConfigs['createdAt'].filterFunction"
+        [nzShowSort]="columnConfigs['createdAt'].showSort"
+        [nzSortPriority]="columnConfigs['createdAt'].sortPriority"
+        [nzSortOrder]="columnConfigs['createdAt'].sortOrder"
+        [nzSortFn]="columnConfigs['createdAt'].sortFunction"
+        [nzSortDirections]="columnConfigs['createdAt'].sortDirections"
+      >
+        Ngày tạo
+      </th>
+      <th
+        nzAlign="center"
+        nzWidth="150px"
+        [nzShowFilter]="columnConfigs['totalAmount'].showFilter"
+        [nzFilterMultiple]="columnConfigs['totalAmount'].filterMultiple"
+        [nzFilters]="columnConfigs['totalAmount'].filterOptions"
+        [nzFilterFn]="columnConfigs['totalAmount'].filterFunction"
+        [nzShowSort]="columnConfigs['totalAmount'].showSort"
+        [nzSortPriority]="columnConfigs['totalAmount'].sortPriority"
+        [nzSortOrder]="columnConfigs['totalAmount'].sortOrder"
+        [nzSortFn]="columnConfigs['totalAmount'].sortFunction"
+        [nzSortDirections]="columnConfigs['totalAmount'].sortDirections"
+      >
+        Tổng tiền
+      </th>
+      <th nzAlign="center" nzWidth="150px" nzRight>Thao tác</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    <tr *ngFor="let data of table.data; let i = index">
+      <td nzAlign="center">
+        {{ (table.nzPageIndex - 1) * table.nzPageSize + i + 1 }}
+      </td>
+      <td nzAlign="center">{{ data.creatorName }}</td>
+      <td nzAlign="center">
+        {{ data.createdAt.toDate() | date : "dd/MM/yyyy HH:mm" }}
+      </td>
+      <td nzAlign="center">{{ data.totalAmount }} (kVNĐ)</td>
+      <td nzAlign="center" nzRight>
+        <nz-space>
+          <button
+            nz-button
+            nzType="primary"
+            nzShape="circle"
+            nzSize="small"
+            *nzSpaceItem
+            (click)="wantViewBill.emit(data)"
+          >
+            <span nz-icon nzType="eye" nzTheme="outline"></span>
+          </button>
+        </nz-space>
+      </td>
+    </tr>
+    </tbody>
+  </nz-table>
+</nz-card>
 <ng-template #extraTemplate>
   <button nz-button nzType="primary" nzShape="circle" nzSize="small">
     <span nz-icon nzType="plus"></span>

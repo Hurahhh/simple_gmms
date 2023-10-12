@@ -5,16 +5,16 @@ import {
   Output,
   SimpleChanges,
 } from '@angular/core';
-import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Payment, PaymentForCreate } from 'src/app/@core/types/payment.type';
+import {FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {Payment, PaymentForCreate} from 'src/app/@core/types/payment.type';
 import {
   ColumnFilterSorterConfig,
   SearchPaymentParams,
 } from 'src/app/@core/types/common.type';
-import { User } from 'src/app/@core/types/user.type';
-import { CommonUtil } from 'src/app/@core/utils/common.util';
-import { PAYMENT_STATUS } from 'src/app/@core/constants/common.constant';
-import { startOfDay, endOfDay, differenceInCalendarDays } from 'date-fns';
+import {User} from 'src/app/@core/types/user.type';
+import {CommonUtil} from 'src/app/@core/utils/common.util';
+import {PAYMENT_STATUS} from 'src/app/@core/constants/common.constant';
+import {startOfDay, endOfDay, differenceInCalendarDays} from 'date-fns';
 
 @Component({
   selector: 'app-payment',
@@ -22,7 +22,8 @@ import { startOfDay, endOfDay, differenceInCalendarDays } from 'date-fns';
   styleUrls: ['./payment.component.css'],
 })
 export class PaymentComponent {
-  constructor(private fb: FormBuilder) {}
+  constructor(private fb: FormBuilder) {
+  }
 
   ngOnInit(): void {
     this.searchForm = this.fb.group({
@@ -66,7 +67,7 @@ export class PaymentComponent {
       Object.values(this.searchForm.controls).forEach((c) => {
         if (c.invalid) {
           c.markAsDirty();
-          c.updateValueAndValidity({ onlySelf: true });
+          c.updateValueAndValidity({onlySelf: true});
         }
       });
       return;
@@ -163,14 +164,14 @@ export class PaymentComponent {
               Object.values(_c.controls).forEach((__c) => {
                 if (__c.invalid) {
                   __c.markAsDirty();
-                  __c.updateValueAndValidity({ onlySelf: true });
+                  __c.updateValueAndValidity({onlySelf: true});
                 }
               });
             }
           });
         } else if (c.invalid) {
           c.markAsDirty();
-          c.updateValueAndValidity({ onlySelf: true });
+          c.updateValueAndValidity({onlySelf: true});
         }
       });
       return;

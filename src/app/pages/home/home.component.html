@@ -6,7 +6,7 @@
       [nzBodyStyle]="{ padding: '0px' }"
     >
       <div nz-row [nzGutter]="[16, 16]">
-        <div nz-col [nzSpan]="16">
+        <div nz-col [nzSpan]="12">
           <app-payment
             [initPayFromDate]="initPayFromDate"
             [initPayToDate]="initPayToDate"
@@ -22,8 +22,15 @@
             (wantViewPayment)="viewPayment($event)"
           ></app-payment>
         </div>
-        <div nz-col [nzSpan]="8">
-          <app-bill></app-bill>
+        <div nz-col [nzSpan]="12">
+          <app-bill
+            [initCreateFromDate]="initCreateFromDate"
+            [initCreateToDate]="initCreateToDate"
+            [isLoadingTable]="isLoadingTableBill"
+            [tableScroll]="tableBillScroll"
+            [tableRows]="tableBillRows"
+            [columnConfigs]="tableBillColumnConfigs"
+          ></app-bill>
         </div>
       </div>
     </nz-card>
@@ -46,5 +53,5 @@
     </div>
   </ng-container>
 
-  <ng-template #pdfViewerFooter> </ng-template>
+  <ng-template #pdfViewerFooter></ng-template>
 </nz-drawer>
