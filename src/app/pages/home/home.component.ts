@@ -1,22 +1,23 @@
-import {AppService} from 'src/app/app.service';
-import {Auth} from '@angular/fire/auth';
+import { AppService } from 'src/app/app.service';
+import { Auth } from '@angular/fire/auth';
 import {
   ColumnFilterSorterConfig,
+  SearchBillParams,
   SearchPaymentParams,
 } from 'src/app/@core/types/common.type';
-import {CommonUtil} from 'src/app/@core/utils/common.util';
-import {Component, ViewChild} from '@angular/core';
-import {format, startOfMonth, endOfMonth} from 'date-fns';
-import {NzMessageService} from 'ng-zorro-antd/message';
-import {Payment, PaymentForCreate} from 'src/app/@core/types/payment.type';
-import {PaymentBusiness} from 'src/app/@core/businesses/payment.business';
-import {Subscription} from 'rxjs';
-import {User} from 'src/app/@core/types/user.type';
-import {UserBusiness} from 'src/app/@core/businesses/user.business';
-import {PdfUtil} from 'src/app/@core/utils/pdf.util';
-import {PaymentComponent} from './payment/payment.component';
-import {Bill} from "../../@core/types/bill.type";
-import {BillComponent} from "./bill/bill.component";
+import { CommonUtil } from 'src/app/@core/utils/common.util';
+import { Component, ViewChild } from '@angular/core';
+import { endOfMonth, format, startOfMonth, startOfYear } from 'date-fns';
+import { NzMessageService } from 'ng-zorro-antd/message';
+import { Payment, PaymentForCreate } from 'src/app/@core/types/payment.type';
+import { PaymentBusiness } from 'src/app/@core/businesses/payment.business';
+import { Subscription } from 'rxjs';
+import { User } from 'src/app/@core/types/user.type';
+import { UserBusiness } from 'src/app/@core/businesses/user.business';
+import { PdfUtil } from 'src/app/@core/utils/pdf.util';
+import { PaymentComponent } from './payment/payment.component';
+import { Bill } from '../../@core/types/bill.type';
+import { BillComponent } from './bill/bill.component';
 
 @Component({
   selector: 'app-home',
@@ -33,8 +34,11 @@ export class HomeComponent {
     private userBusiness: UserBusiness,
     private paymentBusiness: PaymentBusiness
   ) {
-    this.initPayFromDate = startOfMonth(new Date());
-    this.initPayToDate = endOfMonth(new Date());
+    const now = new Date();
+    this.initPayFromDate = startOfMonth(now);
+    this.initPayToDate = endOfMonth(now);
+    this.initCreateFromDate = startOfYear(now);
+    this.initCreateToDate = endOfMonth(now);
   }
 
   async ngOnInit(): Promise<void> {
@@ -217,7 +221,7 @@ export class HomeComponent {
   }
 
   /*
-   * PAYMENTS
+   * BILLS
    */
 
   @ViewChild(BillComponent)
@@ -271,6 +275,10 @@ export class HomeComponent {
     },
   };
 
+  // - Modal
+  isVisibleBillModalForm = false;
+
+  searchBill(prms: SearchBillParams) {}
 
   /*
    * PDF VIEWER

@@ -1,22 +1,22 @@
 <nz-card nzTitle="Quyết toán" [nzExtra]="extraTemplate">
-    <form nz-form nzLayout="vertical" [formGroup]="searchForm">
+  <form nz-form nzLayout="vertical" [formGroup]="searchForm">
     <nz-space nzSize="large" nzAlign="end">
       <nz-form-item *nzSpaceItem>
         <nz-form-label>Tạo từ ngày</nz-form-label>
         <nz-form-control nzErrorTip="Hãy chọn từ ngày!">
           <nz-date-picker
             nzPlaceHolder="Chọn từ ngày"
-            formControlName="payFromDate"
+            formControlName="createFromDate"
             nzFormat="dd/MM/yyyy"
           ></nz-date-picker>
         </nz-form-control>
       </nz-form-item>
       <nz-form-item *nzSpaceItem>
-        <nz-form-label>Tạo tới ngày</nz-form-label>
+        <nz-form-label>Tạo đến ngày</nz-form-label>
         <nz-form-control nzErrorTip="Hãy chọn đến ngày!">
           <nz-date-picker
             nzPlaceHolder="Chọn đến ngày"
-            formControlName="payToDate"
+            formControlName="createToDate"
             nzFormat="dd/MM/yyyy"
           ></nz-date-picker>
         </nz-form-control>
@@ -122,7 +122,70 @@
   </nz-table>
 </nz-card>
 <ng-template #extraTemplate>
-  <button nz-button nzType="primary" nzShape="circle" nzSize="small">
+  <button
+    nz-button
+    nzType="primary"
+    nzShape="circle"
+    nzSize="small"
+    (click)="this.isVisibleModalFormChange.emit(true)"
+  >
     <span nz-icon nzType="plus"></span>
   </button>
 </ng-template>
+<nz-modal
+  [(nzVisible)]="isVisibleModalForm"
+  nzPlacement="top"
+  [nzWidth]="992"
+  nzTitle="Tạo đơn quyết toán"
+  [nzContent]="modalContent"
+  [nzFooter]="modalFooter"
+  (nzOnCancel)="isVisibleModalFormChange.emit(false)"
+  nzMaskClosable="false"
+  nzCentered
+>
+  <ng-template #modalContent>
+    <form nz-form [formGroup]="modalForm">
+      <nz-space nzSize="large">
+        <nz-form-item *nzSpaceItem>
+          <nz-form-label>Chi từ ngày</nz-form-label>
+          <nz-form-control nzErrorTip="Hãy chọn ngày!">
+            <nz-date-picker
+              nzPlaceHolder="Chọn từ ngày"
+              formControlName="payFromDate"
+              nzFormat="dd/MM/yyyy"
+            ></nz-date-picker>
+          </nz-form-control>
+        </nz-form-item>
+        <nz-form-item *nzSpaceItem>
+          <nz-form-label>Chi đến ngày</nz-form-label>
+          <nz-form-control nzErrorTip="Hãy chọn ngày!">
+            <nz-date-picker
+              nzPlaceHolder="Chọn đến ngày"
+              formControlName="payToDate"
+              nzFormat="dd/MM/yyyy"
+            ></nz-date-picker>
+          </nz-form-control>
+        </nz-form-item>
+        <nz-form-item *nzSpaceItem>
+          <nz-form-control>
+            <button nz-button nzType="primary" (click)="onGenerateBill()">
+              <span nz-icon nzType="search"></span>
+              Sinh đơn
+            </button>
+          </nz-form-control>
+        </nz-form-item>
+      </nz-space>
+    </form>
+  </ng-template>
+
+  <ng-template #modalFooter>
+    <button
+      nz-button
+      nzType="primary"
+      (click)="onSaveBill()"
+      [nzLoading]="isSavingBill"
+    >
+      Lưu đơn
+    </button>
+  </ng-template>
+</nz-modal>

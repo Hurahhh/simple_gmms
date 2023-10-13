@@ -30,6 +30,8 @@
             [tableScroll]="tableBillScroll"
             [tableRows]="tableBillRows"
             [columnConfigs]="tableBillColumnConfigs"
+            (wantSearchBill)="searchBill($event)"
+            [(isVisibleModalForm)]="isVisibleBillModalForm"
           ></app-bill>
         </div>
       </div>
