@@ -63,15 +63,27 @@ export class HomeComponent {
         payFromDate: this.initPayFromDate,
         payToDate: this.initPayToDate,
       });
-      const initData = await Promise.all([pr1, pr2]);
+      const pr3 = this.billBusiness.searchBills({
+        createFromDate: this.initCreateFromDate,
+        createToDate: this.initCreateToDate,
+      });
+
+      const initData = await Promise.all([pr1, pr2, pr3]);
       this.users = initData[0];
       this.tablePaymentRows = initData[1];
+      this.tableBillRows = initData[2];
 
       this.tablePaymentColumnConfigs['creatorName'].filterOptions =
         this.users.map((u) => ({
           text: u.userName,
           value: u.userName,
         }));
+      this.tableBillColumnConfigs['creatorName'].filterOptions = this.users.map(
+        (u) => ({
+          text: u.userName,
+          value: u.userName,
+        })
+      );
     } catch (error) {
       this.messageService.error(CommonUtil.COMMON_ERROR_MESSAGE);
     } finally {
@@ -287,7 +299,21 @@ export class HomeComponent {
   isSavingBill = false;
   targetBill: Bill | null = null;
 
-  searchBill(prms: SearchBillParams) {}
+  searchBill(prms: SearchBillParams) {
+    this.isLoadingTableBill = true;
+    this.billBusiness
+      .searchBills(prms)
+      .then((bills) => {
+        this.tableBillRows = bills;
+      })
+      .catch((error) => {
+        console.log(error);
+        this.messageService.error(CommonUtil.COMMON_ERROR_MESSAGE);
+      })
+      .finally(() => {
+        this.isLoadingTableBill = false;
+      });
+  }
 
   searchPaymentForSettle(prms: SearchPaymentParams) {
     this.isLoadingTablePaymentForSettle = true;

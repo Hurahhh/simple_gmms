@@ -92,6 +92,13 @@ export class BillComponent {
       });
       return;
     }
+
+    const _createFromDate = startOfDay(this.searchForm.value.createFromDate);
+    const _createToDate = endOfDay(this.searchForm.value.createToDate);
+    this.wantSearchBill.emit({
+      createFromDate: _createFromDate,
+      createToDate: _createToDate,
+    });
   }
 
   onSearchPayment() {

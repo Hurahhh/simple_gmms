@@ -11,6 +11,7 @@ import {
   where,
   writeBatch,
   runTransaction,
+  Timestamp,
 } from '@angular/fire/firestore';
 
 import { BaseRepository } from './base.repository';
@@ -60,19 +61,28 @@ export class BillRepository implements BaseRepository<Bill> {
   }
 
   async addAsync(bill: Bill): Promise<Bill | null> {
-    const docRef = await addDoc(this.colRef, bill);
-
-    if (docRef.id) {
-      bill.id = docRef.id;
-      await this.updateAsync(bill);
-      return await this.getAsync(docRef.id);
-    }
-
-    return null;
+    throw new Error('not yet implemented');
   }
 
   async updateAsync(bill: Bill): Promise<boolean> {
     throw new Error('not yet implemented');
+  }
+
+  async findByCreatedAtRangeAsync(
+    createdAtFrom: Timestamp,
+    createdAtTo: Timestamp
+  ) {
+    const _query = query(
+      this.colRef,
+      where('createdAt', '>=', createdAtFrom),
+      where('createdAt', '<=', createdAtTo)
+    );
+    const docsSnap = await getDocs(_query);
+    if (docsSnap.empty) {
+      return [];
+    }
+
+    return docsSnap.docs.map((d) => d.data() as Bill);
   }
 
   async createBillAndUpdatePayment(bill: Bill) {
