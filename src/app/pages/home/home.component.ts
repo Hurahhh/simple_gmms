@@ -20,6 +20,7 @@ import { Bill, GenerateBillParams, Settle } from '../../@core/types/bill.type';
 import { BillComponent } from './bill/bill.component';
 import { fill, flattenDeep, max, range, round, uniq } from 'lodash';
 import { Timestamp } from '@angular/fire/firestore';
+import { BillBusiness } from 'src/app/@core/businesses/bill.business';
 
 @Component({
   selector: 'app-home',
@@ -34,7 +35,8 @@ export class HomeComponent {
     private messageService: NzMessageService,
     private appService: AppService,
     private userBusiness: UserBusiness,
-    private paymentBusiness: PaymentBusiness
+    private paymentBusiness: PaymentBusiness,
+    private billBusiness: BillBusiness
   ) {
     const now = new Date();
     this.initPayFromDate = startOfMonth(now);
@@ -48,10 +50,10 @@ export class HomeComponent {
 
     this.app_h$_sub = this.appService.h$.subscribe((h) => {
       this.tablePaymentScroll = {
-        y: h - 444 + 'px',
+        y: h - 474 + 'px',
       };
       this.tableBillScroll = {
-        y: h - 444 + 'px',
+        y: h - 474 + 'px',
       };
     });
 
@@ -281,6 +283,9 @@ export class HomeComponent {
   isVisibleBillModalForm = false;
   isLoadingTablePaymentForSettle = false;
   tablePaymentForSettleRows: Payment[] = [];
+  isPreviewBill = false;
+  isSavingBill = false;
+  targetBill: Bill | null = null;
 
   searchBill(prms: SearchBillParams) {}
 
@@ -315,6 +320,7 @@ export class HomeComponent {
       totalAmount: prms.payments.reduce((s, p) => s + p.totalAmount, 0),
       settles: settles,
     } as Bill;
+    this.targetBill = bill;
     PdfUtil.makeBillPdf(bill)
       .then((blob) => {
         this.pdfDataObjUrl = window.URL.createObjectURL(blob);
@@ -324,6 +330,7 @@ export class HomeComponent {
         console.log(error);
         this.messageService.error(CommonUtil.COMMON_ERROR_MESSAGE);
       });
+    this.isPreviewBill = true;
     this.isVisibleBillModalForm = false;
   }
 
@@ -428,6 +435,25 @@ export class HomeComponent {
     this.billLevelminCashFlow(netAmounts, users, settles);
   }
 
+  onSaveBill() {
+    this.isSavingBill = true;
+    this.billBusiness
+      .createBill(this.targetBill!)
+      .then(() => {
+        this.messageService.success('Lưu đơn quyết toán thành công');
+        this.appPaymentComponent.onSearchPayments();
+        this.appBillComponent.onSearchBills();
+      })
+      .catch((error) => {
+        console.log(error);
+        this.messageService.error(CommonUtil.COMMON_ERROR_MESSAGE);
+      })
+      .finally(() => {
+        this.isPreviewBill = false;
+        this.isVisiblePdfViewer = false;
+        this.isSavingBill = false;
+      });
+  }
   /*
    * PDF VIEWER
    */

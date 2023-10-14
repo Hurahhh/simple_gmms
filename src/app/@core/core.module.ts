@@ -6,11 +6,20 @@ import { PaymentStatusPipe } from './pipes/payment.pipe';
 import { SafePipe } from './pipes/common.pipe';
 import { UserBusiness } from './businesses/user.business';
 import { UserRepository } from './repositories/user.repository';
+import { BillBusiness } from './businesses/bill.business';
+import { BillRepository } from './repositories/bill.repository';
 
 @NgModule({
   declarations: [PaymentStatusPipe, SafePipe],
   imports: [CommonModule],
-  providers: [PaymentRepository, UserRepository, PaymentBusiness, UserBusiness],
+  providers: [
+    PaymentRepository,
+    UserRepository,
+    BillRepository,
+    PaymentBusiness,
+    UserBusiness,
+    BillBusiness,
+  ],
   bootstrap: [],
   exports: [PaymentStatusPipe, SafePipe],
 })

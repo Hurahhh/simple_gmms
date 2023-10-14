@@ -59,5 +59,16 @@
     </div>
   </ng-container>
 
-  <ng-template #pdfViewerFooter></ng-template>
+  <ng-template #pdfViewerFooter>
+    <div *ngIf="isPreviewBill" style="text-align: right">
+      <button
+        nz-button
+        nzType="primary"
+        (click)="onSaveBill()"
+        [nzLoading]="isSavingBill"
+      >
+        Lưu đơn
+      </button>
+    </div>
+  </ng-template>
 </nz-drawer>
