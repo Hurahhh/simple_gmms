@@ -6,7 +6,7 @@ import {
   SimpleChanges,
 } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Bill } from '../../../@core/types/bill.type';
+import { Bill, GenerateBillParams } from '../../../@core/types/bill.type';
 import {
   ColumnFilterSorterConfig,
   SearchBillParams,
@@ -75,7 +75,7 @@ export class BillComponent {
   paymentChecks: boolean[] = [];
   allChecked = false;
   @Input() isLoadingTablePayment = false;
-  @Output() wantGenerateBill = new EventEmitter<Payment[]>();
+  @Output() wantGenerateBill = new EventEmitter<GenerateBillParams>();
 
   @Output() wantSearchBill = new EventEmitter<SearchBillParams>();
   @Output() wantViewBill = new EventEmitter<Bill>();
@@ -137,10 +137,16 @@ export class BillComponent {
   }
 
   onGenerateBill() {
-    const payments = this.tablePaymentRows.filter(
+    const _payments = this.tablePaymentRows.filter(
       (p, i) => this.paymentChecks[i]
     );
-    this.wantGenerateBill.emit(payments);
+    const _payFromDate = startOfDay(this.modalForm.value.payFromDate);
+    const _payToDate = endOfDay(this.modalForm.value.payToDate);
+    this.wantGenerateBill.emit({
+      payments: _payments,
+      payFromDate: _payFromDate,
+      payToDate: _payToDate,
+    });
   }
 
   onSaveBill() {}

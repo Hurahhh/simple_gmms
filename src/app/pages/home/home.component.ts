@@ -16,9 +16,10 @@ import { User } from 'src/app/@core/types/user.type';
 import { UserBusiness } from 'src/app/@core/businesses/user.business';
 import { PdfUtil } from 'src/app/@core/utils/pdf.util';
 import { PaymentComponent } from './payment/payment.component';
-import { Bill, Settle } from '../../@core/types/bill.type';
+import { Bill, GenerateBillParams, Settle } from '../../@core/types/bill.type';
 import { BillComponent } from './bill/bill.component';
 import { fill, flattenDeep, max, range, round, uniq } from 'lodash';
+import { Timestamp } from '@angular/fire/firestore';
 
 @Component({
   selector: 'app-home',
@@ -299,10 +300,34 @@ export class HomeComponent {
       });
   }
 
-  generateBill(payments: Payment[]) {
-    const settles = this.generateSettles(payments);
-    console.log(settles);
+  generateBill(prms: GenerateBillParams) {
+    const creator = this.users.find((u) => u.id == this.auth.currentUser!.uid)!;
+    const settles = this.generateSettles(prms.payments);
+    const bill = {
+      id: null,
+      creatorId: creator.id,
+      creatorName: creator.userName,
+      createdAt: Timestamp.fromDate(new Date()),
+      isActive: true,
+      payFromDate: Timestamp.fromDate(prms.payFromDate),
+      payToDate: Timestamp.fromDate(prms.payToDate),
+      paymentIds: prms.payments.map((p) => p.id),
+      totalAmount: prms.payments.reduce((s, p) => s + p.totalAmount, 0),
+      settles: settles,
+    } as Bill;
+    PdfUtil.makeBillPdf(bill)
+      .then((blob) => {
+        this.pdfDataObjUrl = window.URL.createObjectURL(blob);
+        this.isVisiblePdfViewer = true;
+      })
+      .catch((error) => {
+        console.log(error);
+        this.messageService.error(CommonUtil.COMMON_ERROR_MESSAGE);
+      });
+    this.isVisibleBillModalForm = false;
   }
+
+  viewBill(payment: Payment) {}
 
   private generateSettles(payments: Payment[]) {
     // prepare users

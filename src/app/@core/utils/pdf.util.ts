@@ -1,6 +1,9 @@
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { Payment } from '../types/payment.type';
+import { Bill } from '../types/bill.type';
+import { format } from 'date-fns';
+import { round } from 'lodash';
 
 export class PdfUtil {
   static A4_PAGE_W = 596;
@@ -200,16 +203,21 @@ export class PdfUtil {
       doc.addPage();
     }
 
-    const nowString = PdfUtil.ToDateStr(new Date());
+    const createdAtString = PdfUtil.ToDateStr(payment.createdAt.toDate());
     doc.setFont('gmm_timesi');
-    doc.text(nowString, PdfUtil.A4_PAGE_W - PdfUtil.A4_RIGHT_MRG, finalY + 32, {
-      align: 'right',
-    });
+    doc.text(
+      createdAtString,
+      PdfUtil.A4_PAGE_W - PdfUtil.A4_RIGHT_MRG,
+      finalY + 32,
+      {
+        align: 'right',
+      }
+    );
 
     const centerY =
       PdfUtil.A4_PAGE_W -
       PdfUtil.A4_RIGHT_MRG -
-      doc.getTextWidth(nowString) / 2;
+      doc.getTextWidth(createdAtString) / 2;
     doc.setFont('gmm_timesbd');
     doc.text('Người lập phiếu', centerY, finalY + 48, {
       align: 'center',
@@ -222,6 +230,146 @@ export class PdfUtil {
 
     doc.setFont('gmm_times');
     doc.text(payment.creatorName, centerY, finalY + 150, {
+      align: 'center',
+    });
+
+    return doc.output('blob');
+  }
+
+  static async makeBillPdf(bill: Bill) {
+    const doc = await PdfUtil.initDoc();
+
+    // left header
+    doc.setFont('gmm_times');
+    doc.setFontSize(12);
+    doc.text(
+      'P401 SN14B Mễ Trì Thượng',
+      PdfUtil.A4_LEFT_MRG,
+      PdfUtil.A4_TOP_MRG
+    );
+
+    // right header
+    doc.text(
+      'Simple GMM System',
+      PdfUtil.A4_PAGE_W - PdfUtil.A4_RIGHT_MRG,
+      PdfUtil.A4_TOP_MRG,
+      {
+        align: 'right',
+      }
+    );
+
+    // center
+    doc.setFont('gmm_timesbd');
+    doc.setFontSize(16);
+    doc.text(
+      'ĐƠN QUYẾT TOÁN',
+      PdfUtil.A4_PAGE_W / 2 - doc.getTextWidth('ĐƠN QUYẾT TOÁN') / 2,
+      PdfUtil.A4_TOP_MRG + 48,
+      {
+        align: 'left',
+      }
+    );
+
+    const payFromToString =
+      'Từ ngày ' +
+      format(bill.payFromDate.toDate(), 'dd/MM/yyyy') +
+      ' đến ngày ' +
+      format(bill.payToDate.toDate(), 'dd/MM/yyyy');
+
+    doc.setFont('gmm_timesi');
+    doc.setFontSize(12);
+    doc.text(
+      payFromToString,
+      PdfUtil.A4_PAGE_W / 2 - doc.getTextWidth(payFromToString) / 2,
+      PdfUtil.A4_TOP_MRG + 64,
+      {
+        align: 'left',
+      }
+    );
+
+    doc.setFont('gmm_timesbd');
+    doc.setFontSize(12);
+    doc.text('Tổng kết:', PdfUtil.A4_LEFT_MRG, PdfUtil.A4_TOP_MRG + 96, {
+      align: 'left',
+    });
+
+    doc.setFont('gmm_times');
+    doc.setFontSize(12);
+    doc.text(
+      'Tổng số phiếu chi: ' + bill.paymentIds.length + ' (phiếu)',
+      PdfUtil.A4_LEFT_MRG,
+      PdfUtil.A4_TOP_MRG + 116,
+      {
+        align: 'left',
+      }
+    );
+
+    doc.setFont('gmm_times');
+    doc.setFontSize(12);
+    doc.text(
+      'Tổng số tiền đã chi: ' + bill.totalAmount + ' (kVNĐ)',
+      PdfUtil.A4_LEFT_MRG,
+      PdfUtil.A4_TOP_MRG + 136,
+      {
+        align: 'left',
+      }
+    );
+
+    doc.setFont('gmm_times');
+    doc.setFontSize(12);
+    doc.text(
+      'Các khoản cần thanh toán: ',
+      PdfUtil.A4_LEFT_MRG,
+      PdfUtil.A4_TOP_MRG + 156,
+      {
+        align: 'left',
+      }
+    );
+
+    let finalY = PdfUtil.A4_TOP_MRG + 156;
+    bill.settles.forEach((s) => {
+      finalY += 20;
+      doc.setFont('gmm_times');
+      doc.setFontSize(12);
+      doc.text(
+        `- ${s.aUserName} cần thanh toán ${round(s.amount)} (kVNĐ) cho ${
+          s.bUserName
+        }`,
+        PdfUtil.A4_LEFT_MRG + 32,
+        finalY,
+        {
+          align: 'left',
+        }
+      );
+    });
+
+    const createdAtString = PdfUtil.ToDateStr(bill.createdAt.toDate());
+    doc.setFont('gmm_timesi');
+    doc.text(
+      createdAtString,
+      PdfUtil.A4_PAGE_W - PdfUtil.A4_RIGHT_MRG,
+      finalY + 32,
+      {
+        align: 'right',
+      }
+    );
+
+    const centerY =
+      PdfUtil.A4_PAGE_W -
+      PdfUtil.A4_RIGHT_MRG -
+      doc.getTextWidth(createdAtString) / 2;
+    doc.setFont('gmm_timesbd');
+    doc.text('Người lập đơn', centerY, finalY + 48, {
+      align: 'center',
+    });
+
+    doc.setFont('gmm_timesi');
+    doc.text('(Ký, họ tên)', centerY, finalY + 64, {
+      align: 'center',
+    });
+
+    doc.setFont('gmm_times');
+    doc.text(bill.creatorName, centerY, finalY + 150, {
       align: 'center',
     });
 
