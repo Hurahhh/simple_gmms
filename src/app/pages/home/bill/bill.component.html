@@ -135,7 +135,7 @@
 <nz-modal
   [(nzVisible)]="isVisibleModalForm"
   nzPlacement="top"
-  [nzWidth]="992"
+  [nzWidth]="1200"
   nzTitle="Tạo đơn quyết toán"
   [nzContent]="modalContent"
   [nzFooter]="modalFooter"
@@ -186,21 +186,77 @@
           [nzLoading]="isLoadingTable"
           [nzScroll]="tableScroll"
           [nzPageSize]="20"
-          [nzData]="tablePaymentRows"
-          [nzLoading]="isLoadingTablePayment"
+          [nzData]="tablePaymentForSettleRows"
+          [nzLoading]="isLoadingTablePaymentForSettle"
         >
           <thead>
             <tr>
               <th
                 nzWidth="30px"
-                [(nzChecked)]="allChecked"
+                [(nzChecked)]="isAllPaymentForSettleChecked"
                 (nzCheckedChange)="checkAll($event)"
               ></th>
               <th nzAlign="center" nzWidth="50px">STT</th>
-              <th nzAlign="center" nzWidth="150px">Người tạo</th>
-              <th nzAlign="center" nzWidth="150px">Ngày tạo</th>
-              <th nzAlign="center" nzWidth="150px">Ngày chi</th>
-              <th nzAlign="center" nzWidth="150px">Tổng tiền</th>
+              <th
+                nzAlign="center"
+                nzWidth="200px"
+                [nzShowFilter]="tablePaymentForSettleColumnConfigs['creatorName'].showFilter"
+                [nzFilterMultiple]="tablePaymentForSettleColumnConfigs['creatorName'].filterMultiple"
+                [nzFilters]="tablePaymentForSettleColumnConfigs['creatorName'].filterOptions"
+                [nzFilterFn]="tablePaymentForSettleColumnConfigs['creatorName'].filterFunction"
+                [nzShowSort]="tablePaymentForSettleColumnConfigs['creatorName'].showSort"
+                [nzSortPriority]="tablePaymentForSettleColumnConfigs['creatorName'].sortPriority"
+                [nzSortOrder]="tablePaymentForSettleColumnConfigs['creatorName'].sortOrder"
+                [nzSortFn]="tablePaymentForSettleColumnConfigs['creatorName'].sortFunction"
+                [nzSortDirections]="tablePaymentForSettleColumnConfigs['creatorName'].sortDirections"
+              >
+                Người tạo
+              </th>
+              <th
+                nzAlign="center"
+                nzWidth="200px"
+                [nzShowFilter]="tablePaymentForSettleColumnConfigs['createdAt'].showFilter"
+                [nzFilterMultiple]="tablePaymentForSettleColumnConfigs['createdAt'].filterMultiple"
+                [nzFilters]="tablePaymentForSettleColumnConfigs['createdAt'].filterOptions"
+                [nzFilterFn]="tablePaymentForSettleColumnConfigs['createdAt'].filterFunction"
+                [nzShowSort]="tablePaymentForSettleColumnConfigs['createdAt'].showSort"
+                [nzSortPriority]="tablePaymentForSettleColumnConfigs['createdAt'].sortPriority"
+                [nzSortOrder]="tablePaymentForSettleColumnConfigs['createdAt'].sortOrder"
+                [nzSortFn]="tablePaymentForSettleColumnConfigs['createdAt'].sortFunction"
+                [nzSortDirections]="tablePaymentForSettleColumnConfigs['createdAt'].sortDirections"
+              >
+                Ngày tạo
+              </th>
+              <th
+                nzAlign="center"
+                nzWidth="200px"
+                [nzShowFilter]="tablePaymentForSettleColumnConfigs['paymentAt'].showFilter"
+                [nzFilterMultiple]="tablePaymentForSettleColumnConfigs['paymentAt'].filterMultiple"
+                [nzFilters]="tablePaymentForSettleColumnConfigs['paymentAt'].filterOptions"
+                [nzFilterFn]="tablePaymentForSettleColumnConfigs['paymentAt'].filterFunction"
+                [nzShowSort]="tablePaymentForSettleColumnConfigs['paymentAt'].showSort"
+                [nzSortPriority]="tablePaymentForSettleColumnConfigs['paymentAt'].sortPriority"
+                [nzSortOrder]="tablePaymentForSettleColumnConfigs['paymentAt'].sortOrder"
+                [nzSortFn]="tablePaymentForSettleColumnConfigs['paymentAt'].sortFunction"
+                [nzSortDirections]="tablePaymentForSettleColumnConfigs['paymentAt'].sortDirections"
+              >
+                Ngày chi
+              </th>
+              <th
+                nzAlign="center"
+                nzWidth="150px"
+                [nzShowFilter]="tablePaymentForSettleColumnConfigs['totalAmount'].showFilter"
+                [nzFilterMultiple]="tablePaymentForSettleColumnConfigs['totalAmount'].filterMultiple"
+                [nzFilters]="tablePaymentForSettleColumnConfigs['totalAmount'].filterOptions"
+                [nzFilterFn]="tablePaymentForSettleColumnConfigs['totalAmount'].filterFunction"
+                [nzShowSort]="tablePaymentForSettleColumnConfigs['totalAmount'].showSort"
+                [nzSortPriority]="tablePaymentForSettleColumnConfigs['totalAmount'].sortPriority"
+                [nzSortOrder]="tablePaymentForSettleColumnConfigs['totalAmount'].sortOrder"
+                [nzSortFn]="tablePaymentForSettleColumnConfigs['totalAmount'].sortFunction"
+                [nzSortDirections]="tablePaymentForSettleColumnConfigs['totalAmount'].sortDirections"
+              >
+                Tổng tiền
+              </th>
               <th nzAlign="center" nzWidth="150px">Trạng thái</th>
             </tr>
           </thead>
@@ -209,7 +265,9 @@
             <tr *ngFor="let data of table.data; let i = index">
               <td
                 [(nzChecked)]="
-                  paymentChecks[(table.nzPageIndex - 1) * table.nzPageSize + i]
+                  paymentForSettleChecks[
+                    (table.nzPageIndex - 1) * table.nzPageSize + i
+                  ]
                 "
                 (nzCheckedChange)="changeCheck()"
               ></td>
@@ -246,7 +304,11 @@
       nzType="primary"
       (click)="onGenerateBill()"
       [nzLoading]="isSavingBill"
-      [disabled]="tablePaymentRows.length <= 0 || isLoadingTablePayment || paymentChecks.indexOf(true) == -1"
+      [disabled]="
+        tablePaymentForSettleRows.length <= 0 ||
+        isLoadingTablePaymentForSettle ||
+        paymentForSettleChecks.indexOf(true) == -1
+      "
     >
       Xem trước
     </button>

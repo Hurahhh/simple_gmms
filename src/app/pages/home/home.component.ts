@@ -129,7 +129,7 @@ export class HomeComponent {
       filterFunction: null,
       showSort: true,
       sortPriority: false,
-      sortOrder: null,
+      sortOrder: 'descend',
       sortFunction: (a: Payment, b: Payment) => {
         return a.createdAt.toMillis() - b.createdAt.toMillis();
       },
@@ -270,7 +270,7 @@ export class HomeComponent {
       filterFunction: null,
       showSort: true,
       sortPriority: false,
-      sortOrder: null,
+      sortOrder: 'descend',
       sortFunction: (a: Bill, b: Bill) => {
         return a.createdAt.toMillis() - b.createdAt.toMillis();
       },
@@ -295,7 +295,72 @@ export class HomeComponent {
   isVisibleBillModalForm = false;
   isLoadingTablePaymentForSettle = false;
   tablePaymentForSettleRows: Payment[] = [];
-  isPreviewBill = false;
+  tablePaymentForSettleColumnConfigs: ColumnFilterSorterConfig<Payment> = {
+    creatorName: {
+      showFilter: true,
+      filterMultiple: true,
+      filterOptions: [],
+      filterFunction: (list: string[], item: Payment) => {
+        return list.some((name) => item.creatorName.indexOf(name) !== -1);
+      },
+      showSort: false,
+      sortPriority: false,
+      sortOrder: null,
+      sortFunction: null,
+      sortDirections: [],
+    },
+    createdAt: {
+      showFilter: false,
+      filterMultiple: false,
+      filterOptions: [],
+      filterFunction: null,
+      showSort: true,
+      sortPriority: false,
+      sortOrder: 'descend',
+      sortFunction: (a: Payment, b: Payment) => {
+        return a.createdAt.toMillis() - b.createdAt.toMillis();
+      },
+      sortDirections: [],
+    },
+    paymentAt: {
+      showFilter: false,
+      filterMultiple: false,
+      filterOptions: [],
+      filterFunction: null,
+      showSort: true,
+      sortPriority: false,
+      sortOrder: null,
+      sortFunction: (a: Payment, b: Payment) => {
+        return a.paymentAt.toMillis() - b.paymentAt.toMillis();
+      },
+      sortDirections: [],
+    },
+    totalAmount: {
+      showFilter: false,
+      filterMultiple: false,
+      filterOptions: [],
+      filterFunction: null,
+      showSort: true,
+      sortPriority: false,
+      sortOrder: null,
+      sortFunction: (a: Payment, b: Payment) => {
+        return a.totalAmount - b.totalAmount;
+      },
+      sortDirections: [],
+    },
+    status: {
+      showFilter: false,
+      filterMultiple: false,
+      filterOptions: [],
+      filterFunction: null,
+      showSort: false,
+      sortPriority: -1,
+      sortOrder: null,
+      sortFunction: null,
+      sortDirections: [],
+    },
+  };
+  isPreviewBillBeforeSave = false;
   isSavingBill = false;
   targetBill: Bill | null = null;
 
@@ -346,7 +411,21 @@ export class HomeComponent {
       totalAmount: prms.payments.reduce((s, p) => s + p.totalAmount, 0),
       settles: settles,
     } as Bill;
-    this.targetBill = bill;
+    this.viewBill(bill, true);
+  }
+
+  viewBill(bill: Bill, isPreviewBillBeforeSave: boolean) {
+    if (isPreviewBillBeforeSave) {
+      this.targetBill = bill;
+      this.pdfViewerTitle = 'Đơn quyết toán';
+    } else {
+      this.pdfViewerTitle = `Đơn quyết toán ${bill.id} - Tạo bởi ${
+        bill.creatorName
+      } - Tạo lúc ${format(bill.createdAt.toDate(), 'dd/MM/yyyy HH:mm:ss')}`;
+    }
+
+    this.isVisibleBillModalForm = false;
+    this.isPreviewBillBeforeSave = isPreviewBillBeforeSave;
     PdfUtil.makeBillPdf(bill)
       .then((blob) => {
         this.pdfDataObjUrl = window.URL.createObjectURL(blob);
@@ -356,11 +435,7 @@ export class HomeComponent {
         console.log(error);
         this.messageService.error(CommonUtil.COMMON_ERROR_MESSAGE);
       });
-    this.isPreviewBill = true;
-    this.isVisibleBillModalForm = false;
   }
-
-  viewBill(payment: Payment) {}
 
   private generateSettles(payments: Payment[]) {
     // prepare users
@@ -475,11 +550,12 @@ export class HomeComponent {
         this.messageService.error(CommonUtil.COMMON_ERROR_MESSAGE);
       })
       .finally(() => {
-        this.isPreviewBill = false;
+        this.isPreviewBillBeforeSave = false;
         this.isVisiblePdfViewer = false;
         this.isSavingBill = false;
       });
   }
+
   /*
    * PDF VIEWER
    */

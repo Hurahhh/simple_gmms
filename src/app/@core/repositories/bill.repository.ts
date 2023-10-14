@@ -12,6 +12,7 @@ import {
   writeBatch,
   runTransaction,
   Timestamp,
+  setDoc,
 } from '@angular/fire/firestore';
 
 import { BaseRepository } from './base.repository';
@@ -60,12 +61,27 @@ export class BillRepository implements BaseRepository<Bill> {
     return docsSnap.docs.map((d) => d.data() as Bill);
   }
 
-  async addAsync(bill: Bill): Promise<Bill | null> {
-    throw new Error('not yet implemented');
+  async addAsync(bill: Bill) {
+    const docRef = await addDoc(this.colRef, bill);
+
+    if (docRef.id) {
+      bill.id = docRef.id;
+      await this.updateAsync(bill);
+      return await this.getAsync(docRef.id);
+    }
+
+    return null;
   }
 
-  async updateAsync(bill: Bill): Promise<boolean> {
-    throw new Error('not yet implemented');
+  async updateAsync(bill: Bill) {
+    if (!bill.id) {
+      throw new Error('Entity must have id');
+    }
+
+    const docRef = doc(this.fs, BillRepository.COLLECTION_NAME, bill.id);
+    await setDoc(docRef, bill);
+
+    return true;
   }
 
   async findByCreatedAtRangeAsync(
@@ -88,9 +104,7 @@ export class BillRepository implements BaseRepository<Bill> {
   async createBillAndUpdatePayment(bill: Bill) {
     await runTransaction(this.fs, async () => {
       // add bill
-      const b = writeBatch(this.fs);
-      const docRef = await addDoc(this.colRef, bill);
-      b.set(docRef, bill);
+      this.addAsync(bill);
 
       // update payment status
       const paymentColRef = collection(
@@ -104,6 +118,7 @@ export class BillRepository implements BaseRepository<Bill> {
       }
       const payments = docsSnap.docs.map((d) => d.data() as Payment);
 
+      const b = writeBatch(this.fs);
       payments.forEach((payment) => {
         let status = PAYMENT_STATUS.SETTLED;
         if (payment.status == PAYMENT_STATUS.SETTLED) {

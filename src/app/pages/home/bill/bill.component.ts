@@ -40,12 +40,12 @@ export class BillComponent {
     }
 
     if (
-      changes['tablePaymentRows'] &&
-      changes['tablePaymentRows'].currentValue?.length > 0
+      changes['tablePaymentForSettleRows'] &&
+      changes['tablePaymentForSettleRows'].currentValue?.length > 0
     ) {
-      this.allChecked = true;
-      this.paymentChecks = fill(
-        range(changes['tablePaymentRows'].currentValue.length),
+      this.isAllPaymentForSettleChecked = true;
+      this.paymentForSettleChecks = fill(
+        range(changes['tablePaymentForSettleRows'].currentValue.length),
         true
       );
     }
@@ -70,13 +70,13 @@ export class BillComponent {
   modalForm!: FormGroup;
   @Input() isVisibleModalForm = false;
   @Output() isVisibleModalFormChange = new EventEmitter<boolean>();
-  @Output() wantSearchPayment = new EventEmitter<SearchPaymentParams>();
-  @Input() tablePaymentRows: Payment[] = [];
-  paymentChecks: boolean[] = [];
-  allChecked = false;
-  @Input() isLoadingTablePayment = false;
+  @Output() wantSearchPaymentForSettle = new EventEmitter<SearchPaymentParams>();
+  @Input() tablePaymentForSettleRows: Payment[] = [];
+  @Input() tablePaymentForSettleColumnConfigs: ColumnFilterSorterConfig<Payment> = {};
+  paymentForSettleChecks: boolean[] = [];
+  isAllPaymentForSettleChecked = false;
+  @Input() isLoadingTablePaymentForSettle = false;
   @Output() wantGenerateBill = new EventEmitter<GenerateBillParams>();
-
   @Output() wantSearchBill = new EventEmitter<SearchBillParams>();
   @Output() wantViewBill = new EventEmitter<Bill>();
   isSavingBill = false;
@@ -115,27 +115,29 @@ export class BillComponent {
 
     const _payFromDate = startOfDay(this.modalForm.value.payFromDate);
     const _payToDate = endOfDay(this.modalForm.value.payToDate);
-    this.wantSearchPayment.emit({
+    this.wantSearchPaymentForSettle.emit({
       payFromDate: _payFromDate,
       payToDate: _payToDate,
     });
   }
 
-  checkAll(allChecked: boolean) {
-    this.allChecked = allChecked;
-    this.paymentChecks.fill(this.allChecked);
+  checkAll(isAllPaymentForSettleChecked: boolean) {
+    this.isAllPaymentForSettleChecked = isAllPaymentForSettleChecked;
+    this.paymentForSettleChecks.fill(this.isAllPaymentForSettleChecked);
   }
 
   changeCheck() {
-    if (this.paymentChecks.every((checked) => checked)) {
+    if (this.paymentForSettleChecks.every((checked) => checked)) {
       this.checkAll(true);
+    } else {
+      this.isAllPaymentForSettleChecked = false;
     }
   }
 
   initModal() {
     this.isSavingBill = false;
-    this.allChecked = false;
-    this.tablePaymentRows = [];
+    this.isAllPaymentForSettleChecked = false;
+    this.tablePaymentForSettleRows = [];
     const nowLastMonth = sub(new Date(), { months: 1 });
     this.modalForm = this.fb.group({
       payFromDate: [startOfMonth(nowLastMonth), [Validators.required]],
@@ -144,8 +146,8 @@ export class BillComponent {
   }
 
   onGenerateBill() {
-    const _payments = this.tablePaymentRows.filter(
-      (p, i) => this.paymentChecks[i]
+    const _payments = this.tablePaymentForSettleRows.filter(
+      (p, i) => this.paymentForSettleChecks[i]
     );
     const _payFromDate = startOfDay(this.modalForm.value.payFromDate);
     const _payToDate = endOfDay(this.modalForm.value.payToDate);

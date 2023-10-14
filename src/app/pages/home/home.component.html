@@ -32,10 +32,12 @@
             [columnConfigs]="tableBillColumnConfigs"
             (wantSearchBill)="searchBill($event)"
             [(isVisibleModalForm)]="isVisibleBillModalForm"
-            (wantSearchPayment)="searchPaymentForSettle($event)"
-            [isLoadingTablePayment]="isLoadingTablePaymentForSettle"
-            [tablePaymentRows]="tablePaymentForSettleRows"
+            (wantSearchPaymentForSettle)="searchPaymentForSettle($event)"
+            [isLoadingTablePaymentForSettle]="isLoadingTablePaymentForSettle"
+            [tablePaymentForSettleRows]="tablePaymentForSettleRows"
+            [tablePaymentForSettleColumnConfigs]="tablePaymentForSettleColumnConfigs"
             (wantGenerateBill)="generateBill($event)"
+            (wantViewBill)="viewBill($event, false)"
           ></app-bill>
         </div>
       </div>
@@ -47,7 +49,7 @@
   nzPlacement="top"
   [nzTitle]="pdfViewerTitle"
   nzHeight="100vh"
-  (nzOnClose)="isVisiblePdfViewer = false"
+  (nzOnClose)="this.isVisiblePdfViewer = false"
   [nzFooter]="pdfViewerFooter"
 >
   <ng-container *nzDrawerContent>
@@ -60,7 +62,7 @@
   </ng-container>
 
   <ng-template #pdfViewerFooter>
-    <div *ngIf="isPreviewBill" style="text-align: right">
+    <div *ngIf="isPreviewBillBeforeSave" style="text-align: right">
       <button
         nz-button
         nzType="primary"
