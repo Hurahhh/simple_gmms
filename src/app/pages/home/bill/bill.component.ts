@@ -69,7 +69,10 @@ export class BillComponent {
     });
   }
 
-  onGenerateBill() {}
+  onGenerateBill() {
+
+
+  }
 
   onSaveBill() {}
 }

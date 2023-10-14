@@ -16,8 +16,9 @@ import { User } from 'src/app/@core/types/user.type';
 import { UserBusiness } from 'src/app/@core/businesses/user.business';
 import { PdfUtil } from 'src/app/@core/utils/pdf.util';
 import { PaymentComponent } from './payment/payment.component';
-import { Bill } from '../../@core/types/bill.type';
+import {Bill, Settle} from '../../@core/types/bill.type';
 import { BillComponent } from './bill/bill.component';
+import {flattenDeep, round, uniq} from 'lodash'
 
 @Component({
   selector: 'app-home',
@@ -279,6 +280,77 @@ export class HomeComponent {
   isVisibleBillModalForm = false;
 
   searchBill(prms: SearchBillParams) {}
+
+  generateBill(prms: SearchPaymentParams) {
+
+  }
+
+  private generateSettles(payments: Payment[]) {
+    // prepare users
+    let userIds: any[] = [];
+    payments.forEach(p => {
+      userIds.push(p.aSide.map(a => a.userId))
+      userIds.push(p.bSide.map(b => b.userId))
+    });
+    userIds = uniq(flattenDeep(userIds));
+    const users = this.users.filter(u => userIds.indexOf(u.id) != -1);
+
+    // prepare matrix
+    let matrix: number[][] = [];
+    for (let i = 0; i < users.length; i++) {
+      const debits = [];
+      for (let j = 0; j < users.length; j++) {
+        debits.push(0);
+      }
+      matrix.push(debits);
+    }
+    payments.forEach(payment => {
+      const amountForEachASide = payment.totalAmount / payment.bSide.length / payment.aSide.length;
+      payment.bSide.forEach(b => {
+        payment.aSide.forEach(a => {
+          const i = users.findIndex(u => u.id == b.userId);
+          const j = users.findIndex(u => u.id == a.userId);
+          matrix[i][j] += amountForEachASide;
+        });
+      });
+    });
+
+    // compute settles
+    const netAmounts: number[] = [];
+    for (let i = 0; i < users.length; i++) {
+      const totalCredits = matrix.reduce((s, m) => s + m[i], 0);
+      const totalDebits = matrix[i].reduce((s, n) => s + n, 0);
+      netAmounts.push(totalCredits - totalDebits);
+    }
+    const settles: Settle[] = [];
+    this.minCashFlow(netAmounts, users, settles);
+
+    return settles;
+  }
+
+  private minCashFlow(netAmounts: number[], users: User[], settles: Settle[]) {
+    const maxCredit = Math.max.apply(null, netAmounts);
+    const maxCreditIndex = netAmounts.indexOf(maxCredit);
+    const maxDebit = Math.min.apply(null, netAmounts);
+    const maxDebitIndex = netAmounts.indexOf(maxDebit);
+
+    if (round(maxCredit, 9) == 0 && round(maxDebit) == 0) {
+      return;
+    }
+
+    const min = Math.min(maxCredit, -maxDebit);
+    settles.push({
+      aUserId: users[maxDebitIndex].id!,
+      aUserName: users[maxDebitIndex].userName,
+      bUserId: users[maxCreditIndex].id!,
+      bUserName: users[maxCreditIndex].userName,
+      amount: min
+    });
+    netAmounts[maxCreditIndex] -= min;
+    netAmounts[maxDebitIndex] += min;
+
+    this.minCashFlow(netAmounts, users, settles);
+  }
 
   /*
    * PDF VIEWER
