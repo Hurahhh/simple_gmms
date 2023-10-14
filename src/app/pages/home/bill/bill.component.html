@@ -194,13 +194,12 @@
               <th
                 nzWidth="30px"
                 [(nzChecked)]="allChecked"
-                [nzIndeterminate]="indeterminate"
                 (nzCheckedChange)="checkAll($event)"
               ></th>
               <th nzAlign="center" nzWidth="50px">STT</th>
               <th nzAlign="center" nzWidth="150px">Người tạo</th>
-              <th nzAlign="center" nzWidth="150px">Ngày chi</th>
               <th nzAlign="center" nzWidth="150px">Ngày tạo</th>
+              <th nzAlign="center" nzWidth="150px">Ngày chi</th>
               <th nzAlign="center" nzWidth="150px">Tổng tiền</th>
               <th nzAlign="center" nzWidth="150px">Trạng thái</th>
             </tr>
@@ -245,9 +244,9 @@
     <button
       nz-button
       nzType="primary"
-      (click)="onSaveBill()"
+      (click)="onGenerateBill()"
       [nzLoading]="isSavingBill"
-      [disabled]="tablePaymentRows.length <= 0 || isLoadingTablePayment"
+      [disabled]="tablePaymentRows.length <= 0 || isLoadingTablePayment || paymentChecks.indexOf(true) == -1"
     >
       Tạo đơn
     </button>

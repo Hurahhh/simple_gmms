@@ -35,6 +35,7 @@
             (wantSearchPayment)="searchPaymentForSettle($event)"
             [isLoadingTablePayment]="isLoadingTablePaymentForSettle"
             [tablePaymentRows]="tablePaymentForSettleRows"
+            (wantGenerateBill)="generateBill($event)"
           ></app-bill>
         </div>
       </div>

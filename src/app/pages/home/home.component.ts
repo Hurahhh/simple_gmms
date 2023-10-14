@@ -18,7 +18,7 @@ import { PdfUtil } from 'src/app/@core/utils/pdf.util';
 import { PaymentComponent } from './payment/payment.component';
 import { Bill, Settle } from '../../@core/types/bill.type';
 import { BillComponent } from './bill/bill.component';
-import { flattenDeep, round, uniq } from 'lodash';
+import { fill, flattenDeep, max, range, round, uniq } from 'lodash';
 
 @Component({
   selector: 'app-home',
@@ -299,7 +299,10 @@ export class HomeComponent {
       });
   }
 
-  generateBill(prms: SearchPaymentParams) {}
+  generateBill(payments: Payment[]) {
+    const settles = this.generateSettles(payments);
+    console.log(settles);
+  }
 
   private generateSettles(payments: Payment[]) {
     // prepare users
@@ -312,25 +315,7 @@ export class HomeComponent {
     const users = this.users.filter((u) => userIds.indexOf(u.id) != -1);
 
     // prepare matrix
-    let matrix: number[][] = [];
-    for (let i = 0; i < users.length; i++) {
-      const debits = [];
-      for (let j = 0; j < users.length; j++) {
-        debits.push(0);
-      }
-      matrix.push(debits);
-    }
-    payments.forEach((payment) => {
-      const amountForEachASide =
-        payment.totalAmount / payment.bSide.length / payment.aSide.length;
-      payment.bSide.forEach((b) => {
-        payment.aSide.forEach((a) => {
-          const i = users.findIndex((u) => u.id == b.userId);
-          const j = users.findIndex((u) => u.id == a.userId);
-          matrix[i][j] += amountForEachASide;
-        });
-      });
-    });
+    const matrix = this.computeMatrix(users, payments);
 
     // compute settles
     const netAmounts: number[] = [];
@@ -340,18 +325,67 @@ export class HomeComponent {
       netAmounts.push(totalCredits - totalDebits);
     }
     const settles: Settle[] = [];
-    this.minCashFlow(netAmounts, users, settles);
+    this.billLevelminCashFlow(netAmounts, users, settles);
 
     return settles;
   }
 
-  private minCashFlow(netAmounts: number[], users: User[], settles: Settle[]) {
+  private computeMatrix(users: User[], payments: Payment[]) {
+    let matrix: number[][] = [];
+    for (let i = 0; i < users.length; i++) {
+      const row = [];
+      for (let j = 0; j < users.length; j++) {
+        row.push(0);
+      }
+      matrix.push(row);
+    }
+
+    payments.forEach((payment) => {
+      const netAmounts = fill(range(users.length), 0);
+      payment.aSide.forEach((a) => {
+        const i = users.findIndex((u) => u.id == a.userId);
+        netAmounts[i] += a.amount;
+      });
+      const amountForEachASide = payment.totalAmount / payment.bSide.length;
+      payment.bSide.forEach((b) => {
+        const i = users.findIndex((u) => u.id == b.userId);
+        netAmounts[i] = netAmounts[i] - amountForEachASide;
+      });
+      this.paymentLevelMinCashFlow(netAmounts, matrix);
+    });
+
+    return matrix;
+  }
+
+  private paymentLevelMinCashFlow(netAmounts: number[], matrix: number[][]) {
     const maxCredit = Math.max.apply(null, netAmounts);
     const maxCreditIndex = netAmounts.indexOf(maxCredit);
     const maxDebit = Math.min.apply(null, netAmounts);
     const maxDebitIndex = netAmounts.indexOf(maxDebit);
 
-    if (round(maxCredit, 9) == 0 && round(maxDebit) == 0) {
+    if (round(maxCredit, 6) == 0 && round(maxDebit, 6) == 0) {
+      return;
+    }
+
+    const min = Math.min(maxCredit, -maxDebit);
+    matrix[maxDebitIndex][maxCreditIndex] += min;
+    netAmounts[maxCreditIndex] -= min;
+    netAmounts[maxDebitIndex] += min;
+
+    this.paymentLevelMinCashFlow(netAmounts, matrix);
+  }
+
+  private billLevelminCashFlow(
+    netAmounts: number[],
+    users: User[],
+    settles: Settle[]
+  ) {
+    const maxCredit = Math.max.apply(null, netAmounts);
+    const maxCreditIndex = netAmounts.indexOf(maxCredit);
+    const maxDebit = Math.min.apply(null, netAmounts);
+    const maxDebitIndex = netAmounts.indexOf(maxDebit);
+
+    if (round(maxCredit, 6) == 0 && round(maxDebit, 6) == 0) {
       return;
     }
 
@@ -366,7 +400,7 @@ export class HomeComponent {
     netAmounts[maxCreditIndex] -= min;
     netAmounts[maxDebitIndex] += min;
 
-    this.minCashFlow(netAmounts, users, settles);
+    this.billLevelminCashFlow(netAmounts, users, settles);
   }
 
   /*

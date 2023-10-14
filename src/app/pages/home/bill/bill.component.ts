@@ -74,11 +74,10 @@ export class BillComponent {
   @Input() tablePaymentRows: Payment[] = [];
   paymentChecks: boolean[] = [];
   allChecked = false;
-  indeterminate = false;
   @Input() isLoadingTablePayment = false;
+  @Output() wantGenerateBill = new EventEmitter<Payment[]>();
 
   @Output() wantSearchBill = new EventEmitter<SearchBillParams>();
-  @Output() wantGenerateBill = new EventEmitter<SearchPaymentParams>();
   @Output() wantViewBill = new EventEmitter<Bill>();
   isSavingBill = false;
 
@@ -116,7 +115,6 @@ export class BillComponent {
   }
 
   checkAll(allChecked: boolean) {
-    this.indeterminate = false;
     this.allChecked = allChecked;
     this.paymentChecks.fill(this.allChecked);
   }
@@ -124,8 +122,6 @@ export class BillComponent {
   changeCheck() {
     if (this.paymentChecks.every((checked) => checked)) {
       this.checkAll(true);
-    } else {
-      this.indeterminate = true;
     }
   }
 
@@ -140,7 +136,12 @@ export class BillComponent {
     });
   }
 
-  onGenerateBill() {}
+  onGenerateBill() {
+    const payments = this.tablePaymentRows.filter(
+      (p, i) => this.paymentChecks[i]
+    );
+    this.wantGenerateBill.emit(payments);
+  }
 
   onSaveBill() {}
 }
