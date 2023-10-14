@@ -1,4 +1,10 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  Output,
+  SimpleChanges,
+} from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Bill } from '../../../@core/types/bill.type';
 import {
@@ -6,7 +12,9 @@ import {
   SearchBillParams,
   SearchPaymentParams,
 } from '../../../@core/types/common.type';
-import { sub, startOfMonth, endOfMonth } from 'date-fns';
+import { sub, startOfMonth, endOfMonth, startOfDay, endOfDay } from 'date-fns';
+import { Payment } from 'src/app/@core/types/payment.type';
+import { range, fill } from 'lodash';
 
 @Component({
   selector: 'app-bill',
@@ -21,6 +29,26 @@ export class BillComponent {
       createToDate: [this.initCreateToDate, [Validators.required]],
     });
     this.initModal();
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (
+      changes['isVisibleModalForm'] &&
+      changes['isVisibleModalForm'].currentValue
+    ) {
+      this.initModal();
+    }
+
+    if (
+      changes['tablePaymentRows'] &&
+      changes['tablePaymentRows'].currentValue?.length > 0
+    ) {
+      this.allChecked = true;
+      this.paymentChecks = fill(
+        range(changes['tablePaymentRows'].currentValue.length),
+        true
+      );
+    }
   }
 
   /*
@@ -42,6 +70,13 @@ export class BillComponent {
   modalForm!: FormGroup;
   @Input() isVisibleModalForm = false;
   @Output() isVisibleModalFormChange = new EventEmitter<boolean>();
+  @Output() wantSearchPayment = new EventEmitter<SearchPaymentParams>();
+  @Input() tablePaymentRows: Payment[] = [];
+  paymentChecks: boolean[] = [];
+  allChecked = false;
+  indeterminate = false;
+  @Input() isLoadingTablePayment = false;
+
   @Output() wantSearchBill = new EventEmitter<SearchBillParams>();
   @Output() wantGenerateBill = new EventEmitter<SearchPaymentParams>();
   @Output() wantViewBill = new EventEmitter<Bill>();
@@ -60,8 +95,44 @@ export class BillComponent {
     }
   }
 
+  onSearchPayment() {
+    // validate form
+    if (this.modalForm.invalid) {
+      Object.values(this.modalForm.controls).forEach((c) => {
+        if (c.invalid) {
+          c.markAsDirty();
+          c.updateValueAndValidity({ onlySelf: true });
+        }
+      });
+      return;
+    }
+
+    const _payFromDate = startOfDay(this.modalForm.value.payFromDate);
+    const _payToDate = endOfDay(this.modalForm.value.payToDate);
+    this.wantSearchPayment.emit({
+      payFromDate: _payFromDate,
+      payToDate: _payToDate,
+    });
+  }
+
+  checkAll(allChecked: boolean) {
+    this.indeterminate = false;
+    this.allChecked = allChecked;
+    this.paymentChecks.fill(this.allChecked);
+  }
+
+  changeCheck() {
+    if (this.paymentChecks.every((checked) => checked)) {
+      this.checkAll(true);
+    } else {
+      this.indeterminate = true;
+    }
+  }
+
   initModal() {
     this.isSavingBill = false;
+    this.allChecked = false;
+    this.tablePaymentRows = [];
     const nowLastMonth = sub(new Date(), { months: 1 });
     this.modalForm = this.fb.group({
       payFromDate: [startOfMonth(nowLastMonth), [Validators.required]],
@@ -69,10 +140,7 @@ export class BillComponent {
     });
   }
 
-  onGenerateBill() {
-
-
-  }
+  onGenerateBill() {}
 
   onSaveBill() {}
 }

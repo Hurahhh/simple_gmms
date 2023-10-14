@@ -32,6 +32,9 @@
             [columnConfigs]="tableBillColumnConfigs"
             (wantSearchBill)="searchBill($event)"
             [(isVisibleModalForm)]="isVisibleBillModalForm"
+            (wantSearchPayment)="searchPaymentForSettle($event)"
+            [isLoadingTablePayment]="isLoadingTablePaymentForSettle"
+            [tablePaymentRows]="tablePaymentForSettleRows"
           ></app-bill>
         </div>
       </div>

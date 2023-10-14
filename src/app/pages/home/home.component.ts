@@ -16,9 +16,9 @@ import { User } from 'src/app/@core/types/user.type';
 import { UserBusiness } from 'src/app/@core/businesses/user.business';
 import { PdfUtil } from 'src/app/@core/utils/pdf.util';
 import { PaymentComponent } from './payment/payment.component';
-import {Bill, Settle} from '../../@core/types/bill.type';
+import { Bill, Settle } from '../../@core/types/bill.type';
 import { BillComponent } from './bill/bill.component';
-import {flattenDeep, round, uniq} from 'lodash'
+import { flattenDeep, round, uniq } from 'lodash';
 
 @Component({
   selector: 'app-home',
@@ -278,22 +278,38 @@ export class HomeComponent {
 
   // - Modal
   isVisibleBillModalForm = false;
+  isLoadingTablePaymentForSettle = false;
+  tablePaymentForSettleRows: Payment[] = [];
 
   searchBill(prms: SearchBillParams) {}
 
-  generateBill(prms: SearchPaymentParams) {
-
+  searchPaymentForSettle(prms: SearchPaymentParams) {
+    this.isLoadingTablePaymentForSettle = true;
+    this.paymentBusiness
+      .searchPayments(prms)
+      .then((payments) => {
+        this.tablePaymentForSettleRows = payments;
+      })
+      .catch((error) => {
+        console.log(error);
+        this.messageService.error(CommonUtil.COMMON_ERROR_MESSAGE);
+      })
+      .finally(() => {
+        this.isLoadingTablePaymentForSettle = false;
+      });
   }
+
+  generateBill(prms: SearchPaymentParams) {}
 
   private generateSettles(payments: Payment[]) {
     // prepare users
     let userIds: any[] = [];
-    payments.forEach(p => {
-      userIds.push(p.aSide.map(a => a.userId))
-      userIds.push(p.bSide.map(b => b.userId))
+    payments.forEach((p) => {
+      userIds.push(p.aSide.map((a) => a.userId));
+      userIds.push(p.bSide.map((b) => b.userId));
     });
     userIds = uniq(flattenDeep(userIds));
-    const users = this.users.filter(u => userIds.indexOf(u.id) != -1);
+    const users = this.users.filter((u) => userIds.indexOf(u.id) != -1);
 
     // prepare matrix
     let matrix: number[][] = [];
@@ -304,12 +320,13 @@ export class HomeComponent {
       }
       matrix.push(debits);
     }
-    payments.forEach(payment => {
-      const amountForEachASide = payment.totalAmount / payment.bSide.length / payment.aSide.length;
-      payment.bSide.forEach(b => {
-        payment.aSide.forEach(a => {
-          const i = users.findIndex(u => u.id == b.userId);
-          const j = users.findIndex(u => u.id == a.userId);
+    payments.forEach((payment) => {
+      const amountForEachASide =
+        payment.totalAmount / payment.bSide.length / payment.aSide.length;
+      payment.bSide.forEach((b) => {
+        payment.aSide.forEach((a) => {
+          const i = users.findIndex((u) => u.id == b.userId);
+          const j = users.findIndex((u) => u.id == a.userId);
           matrix[i][j] += amountForEachASide;
         });
       });
@@ -344,7 +361,7 @@ export class HomeComponent {
       aUserName: users[maxDebitIndex].userName,
       bUserId: users[maxCreditIndex].id!,
       bUserName: users[maxCreditIndex].userName,
-      amount: min
+      amount: min,
     });
     netAmounts[maxCreditIndex] -= min;
     netAmounts[maxDebitIndex] += min;
