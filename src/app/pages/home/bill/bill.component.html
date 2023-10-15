@@ -264,11 +264,11 @@
           <tbody>
           <tr *ngFor="let data of tablePaymentForSettle.data; let i = index">
             <td
-              [(nzChecked)]="paymentForSettleChecks[(table.nzPageIndex - 1) * table.nzPageSize + i]"
+              [(nzChecked)]="paymentForSettleChecks[(tablePaymentForSettle.nzPageIndex - 1) * tablePaymentForSettle.nzPageSize + i]"
               (nzCheckedChange)="changeCheck()"
             ></td>
             <td nzAlign="center">
-              {{ (table.nzPageIndex - 1) * table.nzPageSize + i + 1 }}
+              {{ (tablePaymentForSettle.nzPageIndex - 1) * tablePaymentForSettle.nzPageSize + i + 1 }}
             </td>
             <td nzAlign="center">{{ data.creatorName }}</td>
             <td nzAlign="center">
