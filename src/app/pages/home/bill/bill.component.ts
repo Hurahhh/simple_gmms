@@ -1,27 +1,19 @@
-import {
-  Component,
-  EventEmitter,
-  Input,
-  Output,
-  SimpleChanges,
-} from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Bill, GenerateBillParams } from '../../../@core/types/bill.type';
-import {
-  ColumnFilterSorterConfig,
-  SearchBillParams,
-  SearchPaymentParams,
-} from '../../../@core/types/common.type';
-import { sub, startOfMonth, endOfMonth, startOfDay, endOfDay } from 'date-fns';
-import { Payment } from 'src/app/@core/types/payment.type';
-import { range, fill } from 'lodash';
+import {Bill, GenerateBillParams} from '../../../@core/types/bill.type';
+import {ColumnFilterSorterConfig, SearchBillParams, SearchPaymentParams,} from '../../../@core/types/common.type';
+import {Component, EventEmitter, Input, Output, SimpleChanges, ViewChild,} from '@angular/core';
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {Payment} from 'src/app/@core/types/payment.type';
+import {endOfDay, endOfMonth, startOfDay, startOfMonth, sub} from 'date-fns';
+import {fill, range} from 'lodash';
+import {NzTableComponent} from "ng-zorro-antd/table";
 
 @Component({
   selector: 'app-bill',
   templateUrl: './bill.component.html',
 })
 export class BillComponent {
-  constructor(private fb: FormBuilder) {}
+  constructor(private fb: FormBuilder) {
+  }
 
   ngOnInit() {
     this.searchForm = this.fb.group({
@@ -71,6 +63,7 @@ export class BillComponent {
   @Input() isVisibleModalForm = false;
   @Output() isVisibleModalFormChange = new EventEmitter<boolean>();
   @Output() wantSearchPaymentForSettle = new EventEmitter<SearchPaymentParams>();
+  @ViewChild('tablePaymentForSettle') tablePaymentForSettle!: NzTableComponent<Payment>;
   @Input() tablePaymentForSettleRows: Payment[] = [];
   @Input() tablePaymentForSettleColumnConfigs: ColumnFilterSorterConfig<Payment> = {};
   paymentForSettleChecks: boolean[] = [];
@@ -87,7 +80,7 @@ export class BillComponent {
       Object.values(this.searchForm.controls).forEach((c) => {
         if (c.invalid) {
           c.markAsDirty();
-          c.updateValueAndValidity({ onlySelf: true });
+          c.updateValueAndValidity({onlySelf: true});
         }
       });
       return;
@@ -107,7 +100,7 @@ export class BillComponent {
       Object.values(this.modalForm.controls).forEach((c) => {
         if (c.invalid) {
           c.markAsDirty();
-          c.updateValueAndValidity({ onlySelf: true });
+          c.updateValueAndValidity({onlySelf: true});
         }
       });
       return;
@@ -138,7 +131,7 @@ export class BillComponent {
     this.isSavingBill = false;
     this.isAllPaymentForSettleChecked = false;
     this.tablePaymentForSettleRows = [];
-    const nowLastMonth = sub(new Date(), { months: 1 });
+    const nowLastMonth = sub(new Date(), {months: 1});
     this.modalForm = this.fb.group({
       payFromDate: [startOfMonth(nowLastMonth), [Validators.required]],
       payToDate: [endOfMonth(nowLastMonth), [Validators.required]],
@@ -146,9 +139,10 @@ export class BillComponent {
   }
 
   onGenerateBill() {
-    const _payments = this.tablePaymentForSettleRows.filter(
+    const _payments = this.tablePaymentForSettle.data.filter(
       (p, i) => this.paymentForSettleChecks[i]
     );
+    console.log(_payments);
     const _payFromDate = startOfDay(this.modalForm.value.payFromDate);
     const _payToDate = endOfDay(this.modalForm.value.payToDate);
     this.wantGenerateBill.emit({
@@ -158,5 +152,6 @@ export class BillComponent {
     });
   }
 
-  onSaveBill() {}
+  onSaveBill() {
+  }
 }

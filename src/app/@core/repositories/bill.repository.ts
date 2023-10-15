@@ -104,7 +104,7 @@ export class BillRepository implements BaseRepository<Bill> {
   async createBillAndUpdatePayment(bill: Bill) {
     await runTransaction(this.fs, async () => {
       // add bill
-      this.addAsync(bill);
+      await this.addAsync(bill);
 
       // update payment status
       const paymentColRef = collection(

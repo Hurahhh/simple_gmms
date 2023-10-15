@@ -1,26 +1,22 @@
-import { AppService } from 'src/app/app.service';
-import { Auth } from '@angular/fire/auth';
-import {
-  ColumnFilterSorterConfig,
-  SearchBillParams,
-  SearchPaymentParams,
-} from 'src/app/@core/types/common.type';
-import { CommonUtil } from 'src/app/@core/utils/common.util';
-import { Component, ViewChild } from '@angular/core';
-import { endOfMonth, format, startOfMonth, startOfYear } from 'date-fns';
-import { NzMessageService } from 'ng-zorro-antd/message';
-import { Payment, PaymentForCreate } from 'src/app/@core/types/payment.type';
-import { PaymentBusiness } from 'src/app/@core/businesses/payment.business';
-import { Subscription } from 'rxjs';
-import { User } from 'src/app/@core/types/user.type';
-import { UserBusiness } from 'src/app/@core/businesses/user.business';
-import { PdfUtil } from 'src/app/@core/utils/pdf.util';
-import { PaymentComponent } from './payment/payment.component';
-import { Bill, GenerateBillParams, Settle } from '../../@core/types/bill.type';
-import { BillComponent } from './bill/bill.component';
-import { fill, flattenDeep, max, range, round, uniq } from 'lodash';
-import { Timestamp } from '@angular/fire/firestore';
-import { BillBusiness } from 'src/app/@core/businesses/bill.business';
+import {AppService} from 'src/app/app.service';
+import {Auth} from '@angular/fire/auth';
+import {Bill, GenerateBillParams, Settle} from '../../@core/types/bill.type';
+import {BillBusiness} from 'src/app/@core/businesses/bill.business';
+import {BillComponent} from './bill/bill.component';
+import {ColumnFilterSorterConfig, SearchBillParams, SearchPaymentParams,} from 'src/app/@core/types/common.type';
+import {CommonUtil} from 'src/app/@core/utils/common.util';
+import {Component, ViewChild} from '@angular/core';
+import {NzMessageService} from 'ng-zorro-antd/message';
+import {Payment, PaymentForCreate} from 'src/app/@core/types/payment.type';
+import {PaymentBusiness} from 'src/app/@core/businesses/payment.business';
+import {PaymentComponent} from './payment/payment.component';
+import {PdfUtil} from 'src/app/@core/utils/pdf.util';
+import {Subscription} from 'rxjs';
+import {Timestamp} from '@angular/fire/firestore';
+import {UserBusiness} from 'src/app/@core/businesses/user.business';
+import {User} from 'src/app/@core/types/user.type';
+import {endOfMonth, format, startOfMonth, startOfYear} from 'date-fns';
+import {fill, flattenDeep, range, round, uniq} from 'lodash';
 
 @Component({
   selector: 'app-home',
@@ -46,8 +42,6 @@ export class HomeComponent {
   }
 
   async ngOnInit(): Promise<void> {
-    this.isLoading = true;
-
     this.app_h$_sub = this.appService.h$.subscribe((h) => {
       this.tablePaymentScroll = {
         y: h - 474 + 'px',
@@ -56,7 +50,7 @@ export class HomeComponent {
         y: h - 474 + 'px',
       };
     });
-
+    this.isLoading = true;
     try {
       const pr1 = this.userBusiness.getAllUsers();
       const pr2 = this.paymentBusiness.searchPayments({
@@ -85,6 +79,7 @@ export class HomeComponent {
         })
       );
     } catch (error) {
+      console.log(error);
       this.messageService.error(CommonUtil.COMMON_ERROR_MESSAGE);
     } finally {
       this.isLoading = false;
@@ -102,7 +97,7 @@ export class HomeComponent {
   @ViewChild(PaymentComponent)
   private appPaymentComponent!: PaymentComponent;
 
-  // - Table
+  // PAYMENTS - Table
   initPayFromDate!: Date;
   initPayToDate!: Date;
   isLoadingTablePayment = false;
@@ -190,7 +185,7 @@ export class HomeComponent {
       });
   }
 
-  // - Modal
+  // PAYMENTS - Modal
   isVisiblePaymentModalForm = false;
   users: User[] = [];
   isCreatingPayment = false;
@@ -222,13 +217,10 @@ export class HomeComponent {
   }
 
   viewPayment(payment: Payment) {
-    this.pdfViewerTitle = `Phiếu chi ${payment.id} - Tạo bởi ${
-      payment.creatorName
-    } - Tạo lúc ${format(payment.createdAt.toDate(), 'dd/MM/yyyy HH:mm:ss')}`;
     PdfUtil.makePaymentPdf(payment)
       .then((blob) => {
-        this.pdfDataObjUrl = window.URL.createObjectURL(blob);
-        this.isVisiblePdfViewer = true;
+        const title = `Phiếu chi ${payment.id} - Tạo bởi ${payment.creatorName} - Tạo lúc ${format(payment.createdAt.toDate(), 'dd/MM/yyyy HH:mm:ss')}`;
+        this.viewPdf(title, window.URL.createObjectURL(blob), {isPreviewBillBeforeSave: false});
       })
       .catch((error) => {
         console.log(error);
@@ -243,7 +235,7 @@ export class HomeComponent {
   @ViewChild(BillComponent)
   private appBillComponent!: BillComponent;
 
-  // - Table
+  // BILLS - Table
   initCreateFromDate!: Date;
   initCreateToDate!: Date;
   isLoadingTableBill = false;
@@ -291,7 +283,7 @@ export class HomeComponent {
     },
   };
 
-  // - Modal
+  // BILLS - Modal
   isVisibleBillModalForm = false;
   isLoadingTablePaymentForSettle = false;
   tablePaymentForSettleRows: Payment[] = [];
@@ -360,9 +352,6 @@ export class HomeComponent {
       sortDirections: [],
     },
   };
-  isPreviewBillBeforeSave = false;
-  isSavingBill = false;
-  targetBill: Bill | null = null;
 
   searchBill(prms: SearchBillParams) {
     this.isLoadingTableBill = true;
@@ -414,22 +403,17 @@ export class HomeComponent {
     this.viewBill(bill, true);
   }
 
-  viewBill(bill: Bill, isPreviewBillBeforeSave: boolean) {
-    if (isPreviewBillBeforeSave) {
-      this.targetBill = bill;
-      this.pdfViewerTitle = 'Đơn quyết toán';
-    } else {
-      this.pdfViewerTitle = `Đơn quyết toán ${bill.id} - Tạo bởi ${
-        bill.creatorName
-      } - Tạo lúc ${format(bill.createdAt.toDate(), 'dd/MM/yyyy HH:mm:ss')}`;
-    }
-
+  viewBill(bill: Bill, isPreviewBeforeSave: boolean) {
     this.isVisibleBillModalForm = false;
-    this.isPreviewBillBeforeSave = isPreviewBillBeforeSave;
     PdfUtil.makeBillPdf(bill)
       .then((blob) => {
-        this.pdfDataObjUrl = window.URL.createObjectURL(blob);
-        this.isVisiblePdfViewer = true;
+        let title = 'Đơn quyết toán';
+        if (isPreviewBeforeSave) {
+          this.targetBill = bill;
+        } else {
+          title = `Đơn quyết toán ${bill.id} - Tạo bởi ${bill.creatorName} - Tạo lúc ${format(bill.createdAt.toDate(), 'dd/MM/yyyy HH:mm:ss')}`;
+        }
+        this.viewPdf(title, window.URL.createObjectURL(blob), {isPreviewBillBeforeSave: isPreviewBeforeSave});
       })
       .catch((error) => {
         console.log(error);
@@ -458,7 +442,7 @@ export class HomeComponent {
       netAmounts.push(totalCredits - totalDebits);
     }
     const settles: Settle[] = [];
-    this.billLevelminCashFlow(netAmounts, users, settles);
+    this.billLevelMinCashFlow(netAmounts, users, settles);
 
     return settles;
   }
@@ -508,11 +492,7 @@ export class HomeComponent {
     this.paymentLevelMinCashFlow(netAmounts, matrix);
   }
 
-  private billLevelminCashFlow(
-    netAmounts: number[],
-    users: User[],
-    settles: Settle[]
-  ) {
+  private billLevelMinCashFlow(netAmounts: number[], users: User[], settles: Settle[]) {
     const maxCredit = Math.max.apply(null, netAmounts);
     const maxCreditIndex = netAmounts.indexOf(maxCredit);
     const maxDebit = Math.min.apply(null, netAmounts);
@@ -533,7 +513,7 @@ export class HomeComponent {
     netAmounts[maxCreditIndex] -= min;
     netAmounts[maxDebitIndex] += min;
 
-    this.billLevelminCashFlow(netAmounts, users, settles);
+    this.billLevelMinCashFlow(netAmounts, users, settles);
   }
 
   onSaveBill() {
@@ -550,9 +530,7 @@ export class HomeComponent {
         this.messageService.error(CommonUtil.COMMON_ERROR_MESSAGE);
       })
       .finally(() => {
-        this.isPreviewBillBeforeSave = false;
-        this.isVisiblePdfViewer = false;
-        this.isSavingBill = false;
+        this.closePdf();
       });
   }
 
@@ -563,4 +541,23 @@ export class HomeComponent {
   isVisiblePdfViewer = false;
   pdfViewerTitle = '';
   pdfDataObjUrl = '';
+
+  isPreviewBillBeforeSave = false;
+  isSavingBill = false;
+  targetBill: Bill | null = null;
+
+  viewPdf(title: string, dataObjUrl: string, config: { isPreviewBillBeforeSave: boolean }) {
+    this.pdfViewerTitle = title;
+    this.pdfDataObjUrl = dataObjUrl;
+    this.isPreviewBillBeforeSave = config.isPreviewBillBeforeSave;
+    this.isVisiblePdfViewer = true;
+  }
+
+  closePdf() {
+    this.pdfViewerTitle = '';
+    this.pdfDataObjUrl = '';
+    this.isPreviewBillBeforeSave = false;
+    this.isSavingBill = false;
+    this.isVisiblePdfViewer = false;
+  }
 }

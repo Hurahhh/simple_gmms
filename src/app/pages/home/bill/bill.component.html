@@ -42,82 +42,82 @@
     [nzData]="tableRows"
   >
     <thead>
-      <tr>
-        <th nzAlign="center" nzWidth="50px">STT</th>
-        <th
-          nzAlign="center"
-          nzWidth="200px"
-          [nzShowFilter]="columnConfigs['creatorName'].showFilter"
-          [nzFilterMultiple]="columnConfigs['creatorName'].filterMultiple"
-          [nzFilters]="columnConfigs['creatorName'].filterOptions"
-          [nzFilterFn]="columnConfigs['creatorName'].filterFunction"
-          [nzShowSort]="columnConfigs['creatorName'].showSort"
-          [nzSortPriority]="columnConfigs['creatorName'].sortPriority"
-          [nzSortOrder]="columnConfigs['creatorName'].sortOrder"
-          [nzSortFn]="columnConfigs['creatorName'].sortFunction"
-          [nzSortDirections]="columnConfigs['creatorName'].sortDirections"
-        >
-          Người tạo
-        </th>
-        <th
-          nzAlign="center"
-          nzWidth="200px"
-          [nzShowFilter]="columnConfigs['createdAt'].showFilter"
-          [nzFilterMultiple]="columnConfigs['createdAt'].filterMultiple"
-          [nzFilters]="columnConfigs['createdAt'].filterOptions"
-          [nzFilterFn]="columnConfigs['createdAt'].filterFunction"
-          [nzShowSort]="columnConfigs['createdAt'].showSort"
-          [nzSortPriority]="columnConfigs['createdAt'].sortPriority"
-          [nzSortOrder]="columnConfigs['createdAt'].sortOrder"
-          [nzSortFn]="columnConfigs['createdAt'].sortFunction"
-          [nzSortDirections]="columnConfigs['createdAt'].sortDirections"
-        >
-          Ngày tạo
-        </th>
-        <th
-          nzAlign="center"
-          nzWidth="150px"
-          [nzShowFilter]="columnConfigs['totalAmount'].showFilter"
-          [nzFilterMultiple]="columnConfigs['totalAmount'].filterMultiple"
-          [nzFilters]="columnConfigs['totalAmount'].filterOptions"
-          [nzFilterFn]="columnConfigs['totalAmount'].filterFunction"
-          [nzShowSort]="columnConfigs['totalAmount'].showSort"
-          [nzSortPriority]="columnConfigs['totalAmount'].sortPriority"
-          [nzSortOrder]="columnConfigs['totalAmount'].sortOrder"
-          [nzSortFn]="columnConfigs['totalAmount'].sortFunction"
-          [nzSortDirections]="columnConfigs['totalAmount'].sortDirections"
-        >
-          Tổng tiền
-        </th>
-        <th nzAlign="center" nzWidth="150px" nzRight>Thao tác</th>
-      </tr>
+    <tr>
+      <th nzAlign="center" nzWidth="50px">STT</th>
+      <th
+        nzAlign="center"
+        nzWidth="200px"
+        [nzShowFilter]="columnConfigs['creatorName'].showFilter"
+        [nzFilterMultiple]="columnConfigs['creatorName'].filterMultiple"
+        [nzFilters]="columnConfigs['creatorName'].filterOptions"
+        [nzFilterFn]="columnConfigs['creatorName'].filterFunction"
+        [nzShowSort]="columnConfigs['creatorName'].showSort"
+        [nzSortPriority]="columnConfigs['creatorName'].sortPriority"
+        [nzSortOrder]="columnConfigs['creatorName'].sortOrder"
+        [nzSortFn]="columnConfigs['creatorName'].sortFunction"
+        [nzSortDirections]="columnConfigs['creatorName'].sortDirections"
+      >
+        Người tạo
+      </th>
+      <th
+        nzAlign="center"
+        nzWidth="200px"
+        [nzShowFilter]="columnConfigs['createdAt'].showFilter"
+        [nzFilterMultiple]="columnConfigs['createdAt'].filterMultiple"
+        [nzFilters]="columnConfigs['createdAt'].filterOptions"
+        [nzFilterFn]="columnConfigs['createdAt'].filterFunction"
+        [nzShowSort]="columnConfigs['createdAt'].showSort"
+        [nzSortPriority]="columnConfigs['createdAt'].sortPriority"
+        [nzSortOrder]="columnConfigs['createdAt'].sortOrder"
+        [nzSortFn]="columnConfigs['createdAt'].sortFunction"
+        [nzSortDirections]="columnConfigs['createdAt'].sortDirections"
+      >
+        Ngày tạo
+      </th>
+      <th
+        nzAlign="center"
+        nzWidth="150px"
+        [nzShowFilter]="columnConfigs['totalAmount'].showFilter"
+        [nzFilterMultiple]="columnConfigs['totalAmount'].filterMultiple"
+        [nzFilters]="columnConfigs['totalAmount'].filterOptions"
+        [nzFilterFn]="columnConfigs['totalAmount'].filterFunction"
+        [nzShowSort]="columnConfigs['totalAmount'].showSort"
+        [nzSortPriority]="columnConfigs['totalAmount'].sortPriority"
+        [nzSortOrder]="columnConfigs['totalAmount'].sortOrder"
+        [nzSortFn]="columnConfigs['totalAmount'].sortFunction"
+        [nzSortDirections]="columnConfigs['totalAmount'].sortDirections"
+      >
+        Tổng tiền
+      </th>
+      <th nzAlign="center" nzWidth="150px" nzRight>Thao tác</th>
+    </tr>
     </thead>
 
     <tbody>
-      <tr *ngFor="let data of table.data; let i = index">
-        <td nzAlign="center">
-          {{ (table.nzPageIndex - 1) * table.nzPageSize + i + 1 }}
-        </td>
-        <td nzAlign="center">{{ data.creatorName }}</td>
-        <td nzAlign="center">
-          {{ data.createdAt.toDate() | date : "dd/MM/yyyy HH:mm" }}
-        </td>
-        <td nzAlign="center">{{ data.totalAmount }} (kVNĐ)</td>
-        <td nzAlign="center" nzRight>
-          <nz-space>
-            <button
-              nz-button
-              nzType="primary"
-              nzShape="circle"
-              nzSize="small"
-              *nzSpaceItem
-              (click)="wantViewBill.emit(data)"
-            >
-              <span nz-icon nzType="eye" nzTheme="outline"></span>
-            </button>
-          </nz-space>
-        </td>
-      </tr>
+    <tr *ngFor="let data of table.data; let i = index">
+      <td nzAlign="center">
+        {{ (table.nzPageIndex - 1) * table.nzPageSize + i + 1 }}
+      </td>
+      <td nzAlign="center">{{ data.creatorName }}</td>
+      <td nzAlign="center">
+        {{ data.createdAt.toDate() | date : "dd/MM/yyyy HH:mm" }}
+      </td>
+      <td nzAlign="center">{{ data.totalAmount }} (kVNĐ)</td>
+      <td nzAlign="center" nzRight>
+        <nz-space>
+          <button
+            nz-button
+            nzType="primary"
+            nzShape="circle"
+            nzSize="small"
+            *nzSpaceItem
+            (click)="wantViewBill.emit(data)"
+          >
+            <span nz-icon nzType="eye" nzTheme="outline"></span>
+          </button>
+        </nz-space>
+      </td>
+    </tr>
     </tbody>
   </nz-table>
 </nz-card>
@@ -179,7 +179,7 @@
     <div nz-row>
       <div nz-col [nzSpan]="24">
         <nz-table
-          #table
+          #tablePaymentForSettle
           nzBordered
           nzShowSizeChanger
           nzSize="small"
@@ -190,108 +190,100 @@
           [nzLoading]="isLoadingTablePaymentForSettle"
         >
           <thead>
-            <tr>
-              <th
-                nzWidth="30px"
-                [(nzChecked)]="isAllPaymentForSettleChecked"
-                (nzCheckedChange)="checkAll($event)"
-              ></th>
-              <th nzAlign="center" nzWidth="50px">STT</th>
-              <th
-                nzAlign="center"
-                nzWidth="200px"
-                [nzShowFilter]="tablePaymentForSettleColumnConfigs['creatorName'].showFilter"
-                [nzFilterMultiple]="tablePaymentForSettleColumnConfigs['creatorName'].filterMultiple"
-                [nzFilters]="tablePaymentForSettleColumnConfigs['creatorName'].filterOptions"
-                [nzFilterFn]="tablePaymentForSettleColumnConfigs['creatorName'].filterFunction"
-                [nzShowSort]="tablePaymentForSettleColumnConfigs['creatorName'].showSort"
-                [nzSortPriority]="tablePaymentForSettleColumnConfigs['creatorName'].sortPriority"
-                [nzSortOrder]="tablePaymentForSettleColumnConfigs['creatorName'].sortOrder"
-                [nzSortFn]="tablePaymentForSettleColumnConfigs['creatorName'].sortFunction"
-                [nzSortDirections]="tablePaymentForSettleColumnConfigs['creatorName'].sortDirections"
-              >
-                Người tạo
-              </th>
-              <th
-                nzAlign="center"
-                nzWidth="200px"
-                [nzShowFilter]="tablePaymentForSettleColumnConfigs['createdAt'].showFilter"
-                [nzFilterMultiple]="tablePaymentForSettleColumnConfigs['createdAt'].filterMultiple"
-                [nzFilters]="tablePaymentForSettleColumnConfigs['createdAt'].filterOptions"
-                [nzFilterFn]="tablePaymentForSettleColumnConfigs['createdAt'].filterFunction"
-                [nzShowSort]="tablePaymentForSettleColumnConfigs['createdAt'].showSort"
-                [nzSortPriority]="tablePaymentForSettleColumnConfigs['createdAt'].sortPriority"
-                [nzSortOrder]="tablePaymentForSettleColumnConfigs['createdAt'].sortOrder"
-                [nzSortFn]="tablePaymentForSettleColumnConfigs['createdAt'].sortFunction"
-                [nzSortDirections]="tablePaymentForSettleColumnConfigs['createdAt'].sortDirections"
-              >
-                Ngày tạo
-              </th>
-              <th
-                nzAlign="center"
-                nzWidth="200px"
-                [nzShowFilter]="tablePaymentForSettleColumnConfigs['paymentAt'].showFilter"
-                [nzFilterMultiple]="tablePaymentForSettleColumnConfigs['paymentAt'].filterMultiple"
-                [nzFilters]="tablePaymentForSettleColumnConfigs['paymentAt'].filterOptions"
-                [nzFilterFn]="tablePaymentForSettleColumnConfigs['paymentAt'].filterFunction"
-                [nzShowSort]="tablePaymentForSettleColumnConfigs['paymentAt'].showSort"
-                [nzSortPriority]="tablePaymentForSettleColumnConfigs['paymentAt'].sortPriority"
-                [nzSortOrder]="tablePaymentForSettleColumnConfigs['paymentAt'].sortOrder"
-                [nzSortFn]="tablePaymentForSettleColumnConfigs['paymentAt'].sortFunction"
-                [nzSortDirections]="tablePaymentForSettleColumnConfigs['paymentAt'].sortDirections"
-              >
-                Ngày chi
-              </th>
-              <th
-                nzAlign="center"
-                nzWidth="150px"
-                [nzShowFilter]="tablePaymentForSettleColumnConfigs['totalAmount'].showFilter"
-                [nzFilterMultiple]="tablePaymentForSettleColumnConfigs['totalAmount'].filterMultiple"
-                [nzFilters]="tablePaymentForSettleColumnConfigs['totalAmount'].filterOptions"
-                [nzFilterFn]="tablePaymentForSettleColumnConfigs['totalAmount'].filterFunction"
-                [nzShowSort]="tablePaymentForSettleColumnConfigs['totalAmount'].showSort"
-                [nzSortPriority]="tablePaymentForSettleColumnConfigs['totalAmount'].sortPriority"
-                [nzSortOrder]="tablePaymentForSettleColumnConfigs['totalAmount'].sortOrder"
-                [nzSortFn]="tablePaymentForSettleColumnConfigs['totalAmount'].sortFunction"
-                [nzSortDirections]="tablePaymentForSettleColumnConfigs['totalAmount'].sortDirections"
-              >
-                Tổng tiền
-              </th>
-              <th nzAlign="center" nzWidth="150px">Trạng thái</th>
-            </tr>
+          <tr>
+            <th
+              nzWidth="30px"
+              [(nzChecked)]="isAllPaymentForSettleChecked"
+              (nzCheckedChange)="checkAll($event)"
+            ></th>
+            <th nzAlign="center" nzWidth="50px">STT</th>
+            <th
+              nzAlign="center"
+              nzWidth="200px"
+              [nzShowFilter]="tablePaymentForSettleColumnConfigs['creatorName'].showFilter"
+              [nzFilterMultiple]="tablePaymentForSettleColumnConfigs['creatorName'].filterMultiple"
+              [nzFilters]="tablePaymentForSettleColumnConfigs['creatorName'].filterOptions"
+              [nzFilterFn]="tablePaymentForSettleColumnConfigs['creatorName'].filterFunction"
+              [nzShowSort]="tablePaymentForSettleColumnConfigs['creatorName'].showSort"
+              [nzSortPriority]="tablePaymentForSettleColumnConfigs['creatorName'].sortPriority"
+              [nzSortOrder]="tablePaymentForSettleColumnConfigs['creatorName'].sortOrder"
+              [nzSortFn]="tablePaymentForSettleColumnConfigs['creatorName'].sortFunction"
+              [nzSortDirections]="tablePaymentForSettleColumnConfigs['creatorName'].sortDirections"
+            >
+              Người tạo
+            </th>
+            <th
+              nzAlign="center"
+              nzWidth="200px"
+              [nzShowFilter]="tablePaymentForSettleColumnConfigs['createdAt'].showFilter"
+              [nzFilterMultiple]="tablePaymentForSettleColumnConfigs['createdAt'].filterMultiple"
+              [nzFilters]="tablePaymentForSettleColumnConfigs['createdAt'].filterOptions"
+              [nzFilterFn]="tablePaymentForSettleColumnConfigs['createdAt'].filterFunction"
+              [nzShowSort]="tablePaymentForSettleColumnConfigs['createdAt'].showSort"
+              [nzSortPriority]="tablePaymentForSettleColumnConfigs['createdAt'].sortPriority"
+              [nzSortOrder]="tablePaymentForSettleColumnConfigs['createdAt'].sortOrder"
+              [nzSortFn]="tablePaymentForSettleColumnConfigs['createdAt'].sortFunction"
+              [nzSortDirections]="tablePaymentForSettleColumnConfigs['createdAt'].sortDirections"
+            >
+              Ngày tạo
+            </th>
+            <th
+              nzAlign="center"
+              nzWidth="200px"
+              [nzShowFilter]="tablePaymentForSettleColumnConfigs['paymentAt'].showFilter"
+              [nzFilterMultiple]="tablePaymentForSettleColumnConfigs['paymentAt'].filterMultiple"
+              [nzFilters]="tablePaymentForSettleColumnConfigs['paymentAt'].filterOptions"
+              [nzFilterFn]="tablePaymentForSettleColumnConfigs['paymentAt'].filterFunction"
+              [nzShowSort]="tablePaymentForSettleColumnConfigs['paymentAt'].showSort"
+              [nzSortPriority]="tablePaymentForSettleColumnConfigs['paymentAt'].sortPriority"
+              [nzSortOrder]="tablePaymentForSettleColumnConfigs['paymentAt'].sortOrder"
+              [nzSortFn]="tablePaymentForSettleColumnConfigs['paymentAt'].sortFunction"
+              [nzSortDirections]="tablePaymentForSettleColumnConfigs['paymentAt'].sortDirections"
+            >
+              Ngày chi
+            </th>
+            <th
+              nzAlign="center"
+              nzWidth="150px"
+              [nzShowFilter]="tablePaymentForSettleColumnConfigs['totalAmount'].showFilter"
+              [nzFilterMultiple]="tablePaymentForSettleColumnConfigs['totalAmount'].filterMultiple"
+              [nzFilters]="tablePaymentForSettleColumnConfigs['totalAmount'].filterOptions"
+              [nzFilterFn]="tablePaymentForSettleColumnConfigs['totalAmount'].filterFunction"
+              [nzShowSort]="tablePaymentForSettleColumnConfigs['totalAmount'].showSort"
+              [nzSortPriority]="tablePaymentForSettleColumnConfigs['totalAmount'].sortPriority"
+              [nzSortOrder]="tablePaymentForSettleColumnConfigs['totalAmount'].sortOrder"
+              [nzSortFn]="tablePaymentForSettleColumnConfigs['totalAmount'].sortFunction"
+              [nzSortDirections]="tablePaymentForSettleColumnConfigs['totalAmount'].sortDirections"
+            >
+              Tổng tiền
+            </th>
+            <th nzAlign="center" nzWidth="150px">Trạng thái</th>
+          </tr>
           </thead>
 
           <tbody>
-            <tr *ngFor="let data of table.data; let i = index">
-              <td
-                [(nzChecked)]="
-                  paymentForSettleChecks[
-                    (table.nzPageIndex - 1) * table.nzPageSize + i
-                  ]
-                "
-                (nzCheckedChange)="changeCheck()"
-              ></td>
-              <td nzAlign="center">
-                {{ (table.nzPageIndex - 1) * table.nzPageSize + i + 1 }}
-              </td>
-              <td nzAlign="center">{{ data.creatorName }}</td>
-              <td nzAlign="center">
-                {{ data.createdAt.toDate() | date : "dd/MM/yyyy HH:mm" }}
-              </td>
-              <td nzAlign="center">
-                {{ data.paymentAt.toDate() | date : "dd/MM/yyyy HH:mm" }}
-              </td>
-              <td nzAlign="center">{{ data.totalAmount }} (kVNĐ)</td>
-              <td nzAlign="center">
-                <ng-container
-                  *ngIf="data.status | payment_status as paymentTag"
-                >
-                  <nz-tag [nzColor]="paymentTag.color">{{
-                    paymentTag.text
-                  }}</nz-tag>
-                </ng-container>
-              </td>
-            </tr>
+          <tr *ngFor="let data of tablePaymentForSettle.data; let i = index">
+            <td
+              [(nzChecked)]="paymentForSettleChecks[(table.nzPageIndex - 1) * table.nzPageSize + i]"
+              (nzCheckedChange)="changeCheck()"
+            ></td>
+            <td nzAlign="center">
+              {{ (table.nzPageIndex - 1) * table.nzPageSize + i + 1 }}
+            </td>
+            <td nzAlign="center">{{ data.creatorName }}</td>
+            <td nzAlign="center">
+              {{ data.createdAt.toDate() | date : "dd/MM/yyyy HH:mm" }}
+            </td>
+            <td nzAlign="center">
+              {{ data.paymentAt.toDate() | date : "dd/MM/yyyy HH:mm" }}
+            </td>
+            <td nzAlign="center">{{ data.totalAmount }} (kVNĐ)</td>
+            <td nzAlign="center">
+              <ng-container *ngIf="data.status | payment_status as paymentTag">
+                <nz-tag [nzColor]="paymentTag.color">{{ paymentTag.text }}</nz-tag>
+              </ng-container>
+            </td>
+          </tr>
           </tbody>
         </nz-table>
       </div>
@@ -304,11 +296,7 @@
       nzType="primary"
       (click)="onGenerateBill()"
       [nzLoading]="isSavingBill"
-      [disabled]="
-        tablePaymentForSettleRows.length <= 0 ||
-        isLoadingTablePaymentForSettle ||
-        paymentForSettleChecks.indexOf(true) == -1
-      "
+      [disabled]="tablePaymentForSettleRows.length <= 0 || isLoadingTablePaymentForSettle || paymentForSettleChecks.indexOf(true) == -1"
     >
       Xem trước
     </button>
