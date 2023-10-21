@@ -40,6 +40,7 @@
     [nzScroll]="tableScroll"
     [nzPageSize]="20"
     [nzData]="tableRows"
+    [nzShowTotal]="rangeTemplate"
   >
     <thead>
     <tr>
@@ -132,6 +133,9 @@
     <span nz-icon nzType="plus"></span>
   </button>
 </ng-template>
+<ng-template #rangeTemplate let-range="range" let-total>
+  Hiển thị {{ range[0] }}-{{ range[1] }} của {{ total }} kết quả
+</ng-template>
 <nz-modal
   [(nzVisible)]="isVisibleModalForm"
   nzPlacement="top"
@@ -188,6 +192,7 @@
           [nzPageSize]="20"
           [nzData]="tablePaymentForSettleRows"
           [nzLoading]="isLoadingTablePaymentForSettle"
+          [nzShowTotal]="rangeTemplate"
         >
           <thead>
           <tr>
