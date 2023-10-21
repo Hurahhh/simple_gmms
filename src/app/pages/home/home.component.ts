@@ -7,7 +7,7 @@ import {ColumnFilterSorterConfig, SearchBillParams, SearchPaymentParams,} from '
 import {CommonUtil} from 'src/app/@core/utils/common.util';
 import {Component, ViewChild} from '@angular/core';
 import {NzMessageService} from 'ng-zorro-antd/message';
-import {Payment, PaymentForCreate} from 'src/app/@core/types/payment.type';
+import {Payment, PaymentForCreate, PaymentForUpdate} from 'src/app/@core/types/payment.type';
 import {PaymentBusiness} from 'src/app/@core/businesses/payment.business';
 import {PaymentComponent} from './payment/payment.component';
 import {PdfUtil} from 'src/app/@core/utils/pdf.util';
@@ -198,7 +198,13 @@ export class HomeComponent {
           this.isVisiblePaymentModalForm = false;
           this.messageService.success('Tạo phiếu chi thành công');
           this.appPaymentComponent.onSearchPayments();
+        } else {
+          this.messageService.error(CommonUtil.COMMON_ERROR_MESSAGE);
         }
+      })
+      .catch((error) => {
+        console.log(error);
+        this.messageService.error(CommonUtil.COMMON_ERROR_MESSAGE);
       });
   }
 
@@ -221,6 +227,20 @@ export class HomeComponent {
       .then((blob) => {
         const title = `Phiếu chi ${payment.id} - Tạo bởi ${payment.creatorName} - Tạo lúc ${format(payment.createdAt.toDate(), 'dd/MM/yyyy HH:mm:ss')}`;
         this.viewPdf(title, window.URL.createObjectURL(blob), {isPreviewBillBeforeSave: false});
+      })
+      .catch((error) => {
+        console.log(error);
+        this.messageService.error(CommonUtil.COMMON_ERROR_MESSAGE);
+      });
+  }
+
+  updatePayment(dto: PaymentForUpdate) {
+    this.paymentBusiness
+      .updatePayment(dto, this.auth.currentUser!.uid)
+      .then(() => {
+        this.appPaymentComponent.triggerHideEditModal();
+        this.messageService.success('Cập nhật phiếu chi thành công');
+        this.appPaymentComponent.onSearchPayments();
       })
       .catch((error) => {
         console.log(error);
@@ -393,6 +413,9 @@ export class HomeComponent {
       creatorId: creator.id,
       creatorName: creator.userName,
       createdAt: Timestamp.fromDate(new Date()),
+      updatorId: null,
+      updatorName: null,
+      updatedAt: null,
       isActive: true,
       payFromDate: Timestamp.fromDate(prms.payFromDate),
       payToDate: Timestamp.fromDate(prms.payToDate),

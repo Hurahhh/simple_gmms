@@ -1,20 +1,12 @@
-import {
-  ColumnFilterSorterConfig,
-  SearchPaymentParams,
-} from 'src/app/@core/types/common.type';
-import { CommonUtil } from 'src/app/@core/utils/common.util';
-import {
-  Component,
-  EventEmitter,
-  Input,
-  Output,
-  SimpleChanges,
-} from '@angular/core';
-import { differenceInCalendarDays, endOfDay, startOfDay } from 'date-fns';
-import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { PAYMENT_STATUS } from 'src/app/@core/constants/common.constant';
-import { Payment, PaymentForCreate } from 'src/app/@core/types/payment.type';
-import { User } from 'src/app/@core/types/user.type';
+import {ColumnFilterSorterConfig, SearchPaymentParams} from 'src/app/@core/types/common.type';
+import {CommonUtil} from 'src/app/@core/utils/common.util';
+import {Component, EventEmitter, Input, Output, SimpleChanges, ViewChild} from '@angular/core';
+import {EditPaymentComponent} from "./edit-payment/edit-payment.component";
+import {FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {PAYMENT_STATUS} from 'src/app/@core/constants/common.constant';
+import {Payment, PaymentForCreate, PaymentForUpdate} from 'src/app/@core/types/payment.type';
+import {User} from 'src/app/@core/types/user.type';
+import {differenceInCalendarDays, endOfDay, startOfDay} from 'date-fns';
 
 @Component({
   selector: 'app-payment',
@@ -57,7 +49,7 @@ export class PaymentComponent {
   @Output() wantViewPayment = new EventEmitter<Payment>();
 
   canDeletePayment(payment: Payment) {
-    return payment.status == PAYMENT_STATUS.CREATED;
+    return payment.status == PAYMENT_STATUS.CREATED || payment.status == PAYMENT_STATUS.EDITED;
   }
 
   onSearchPayments() {
@@ -66,7 +58,7 @@ export class PaymentComponent {
       Object.values(this.searchForm.controls).forEach((c) => {
         if (c.invalid) {
           c.markAsDirty();
-          c.updateValueAndValidity({ onlySelf: true });
+          c.updateValueAndValidity({onlySelf: true});
         }
       });
       return;
@@ -163,14 +155,14 @@ export class PaymentComponent {
               Object.values(_c.controls).forEach((__c) => {
                 if (__c.invalid) {
                   __c.markAsDirty();
-                  __c.updateValueAndValidity({ onlySelf: true });
+                  __c.updateValueAndValidity({onlySelf: true});
                 }
               });
             }
           });
         } else if (c.invalid) {
           c.markAsDirty();
-          c.updateValueAndValidity({ onlySelf: true });
+          c.updateValueAndValidity({onlySelf: true});
         }
       });
       return;
@@ -209,5 +201,19 @@ export class PaymentComponent {
 
   disabledDateAfterToday(current: Date) {
     return differenceInCalendarDays(current, new Date()) > 0;
+  }
+
+  /*
+   * EDIT MODAL
+   */
+  @ViewChild('editPaymentComponent') editPaymentComponent!: EditPaymentComponent;
+  @Output() wantUpdatePayment = new EventEmitter<PaymentForUpdate>();
+
+  onUpdatePayment(payment: PaymentForUpdate) {
+    this.wantUpdatePayment.emit(payment);
+  }
+
+  triggerHideEditModal() {
+    this.editPaymentComponent.hide();
   }
 }

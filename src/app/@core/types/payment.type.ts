@@ -1,6 +1,6 @@
-import { Entity } from './entity.type';
-import { PAYMENT_STATUS } from '../constants/common.constant';
-import { Timestamp } from 'firebase/firestore';
+import {Entity} from './entity.type';
+import {PAYMENT_STATUS} from '../constants/common.constant';
+import {Timestamp} from 'firebase/firestore';
 
 export type Payment = Entity & {
   paymentAt: Timestamp;
@@ -28,4 +28,8 @@ export type PaymentForCreate = {
   bSide: {
     userId: string;
   }[];
+};
+
+export type PaymentForUpdate = PaymentForCreate & {
+  paymentId: string,
 };

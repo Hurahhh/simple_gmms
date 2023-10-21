@@ -1,5 +1,5 @@
-import { NgModule } from '@angular/core';
-import { NzIconModule } from 'ng-zorro-antd/icon';
+import {NgModule} from '@angular/core';
+import {NzIconModule} from 'ng-zorro-antd/icon';
 
 import {
   LockOutline,
@@ -7,6 +7,7 @@ import {
   PlusOutline,
   RetweetOutline,
   UserOutline,
+  EditOutline,
 } from '@ant-design/icons-angular/icons';
 
 const icons = [
@@ -15,6 +16,7 @@ const icons = [
   PlusOutline,
   RetweetOutline,
   UserOutline,
+  EditOutline,
 ];
 
 @NgModule({

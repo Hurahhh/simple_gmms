@@ -159,6 +159,20 @@
             nzType="primary"
             nzShape="circle"
             nzSize="small"
+            *nzSpaceItem
+            [disabled]="!canDeletePayment(data)"
+            nz-tooltip
+            nzTooltipTitle="Không thể sửa phiếu đã quyết toán"
+            [nzTooltipTrigger]="canDeletePayment(data) ? null : 'hover'"
+            (click)="editPaymentComponent.show(data)"
+          >
+            <span nz-icon nzType="edit" nzTheme="outline"></span>
+          </button>
+          <button
+            nz-button
+            nzType="primary"
+            nzShape="circle"
+            nzSize="small"
             nzDanger
             *nzSpaceItem
             [disabled]="!canDeletePayment(data)"
@@ -417,3 +431,4 @@
     </button>
   </ng-template>
 </nz-modal>
+<edit-payment #editPaymentComponent [users]="users" (wantUpdatePayment)="onUpdatePayment($event)"></edit-payment>

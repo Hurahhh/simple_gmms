@@ -1,7 +1,8 @@
 export enum PAYMENT_STATUS {
   CREATED = 1,
-  SETTLED = 2,
-  DUPPLICATE_SETTLED = 3,
+  EDITED = 2,
+  SETTLED = 3,
+  DUPPLICATE_SETTLED = 4,
 }
 
 export enum TAG_COLOR {
