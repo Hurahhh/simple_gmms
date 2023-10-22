@@ -47,7 +47,7 @@
       <th nzAlign="center" nzWidth="50px">STT</th>
       <th
         nzAlign="center"
-        nzWidth="200px"
+        nzWidth="150px"
         [nzShowFilter]="columnConfigs['creatorName'].showFilter"
         [nzFilterMultiple]="columnConfigs['creatorName'].filterMultiple"
         [nzFilters]="columnConfigs['creatorName'].filterOptions"
@@ -62,7 +62,7 @@
       </th>
       <th
         nzAlign="center"
-        nzWidth="200px"
+        nzWidth="150px"
         [nzShowFilter]="columnConfigs['createdAt'].showFilter"
         [nzFilterMultiple]="columnConfigs['createdAt'].filterMultiple"
         [nzFilters]="columnConfigs['createdAt'].filterOptions"
@@ -77,7 +77,7 @@
       </th>
       <th
         nzAlign="center"
-        nzWidth="200px"
+        nzWidth="150px"
         [nzShowFilter]="columnConfigs['paymentAt'].showFilter"
         [nzFilterMultiple]="columnConfigs['paymentAt'].filterMultiple"
         [nzFilters]="columnConfigs['paymentAt'].filterOptions"
@@ -120,6 +120,7 @@
       >
         Trạng thái
       </th>
+      <th nzAlign="center" nzWidth="150px">Người sửa</th>
       <th nzAlign="center" nzWidth="150px" nzRight>Thao tác</th>
     </tr>
     </thead>
@@ -142,6 +143,7 @@
           <nz-tag [nzColor]="paymentTag.color">{{ paymentTag.text }}</nz-tag>
         </ng-container>
       </td>
+      <td nzAlign="center">{{ data.updatorName }}</td>
       <td nzAlign="center" nzRight>
         <nz-space>
           <button

@@ -16,7 +16,7 @@ export class PaymentStatusPipe implements PipeTransform {
         break;
 
       case PAYMENT_STATUS.EDITED:
-        tag.text = 'Đã cập nhật';
+        tag.text = 'Đã sửa';
         tag.color = TAG_COLOR.GOLD;
         break;
 

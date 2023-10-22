@@ -72,6 +72,11 @@ export class HomeComponent {
           text: u.userName,
           value: u.userName,
         }));
+      this.tablePaymentForSettleColumnConfigs['creatorName'].filterOptions =
+        this.users.map((u) => ({
+          text: u.userName,
+          value: u.userName,
+        }));
       this.tableBillColumnConfigs['creatorName'].filterOptions = this.users.map(
         (u) => ({
           text: u.userName,
@@ -239,7 +244,7 @@ export class HomeComponent {
       .updatePayment(dto, this.auth.currentUser!.uid)
       .then(() => {
         this.appPaymentComponent.triggerHideEditModal();
-        this.messageService.success('Cập nhật phiếu chi thành công');
+        this.messageService.success('Sửa phiếu chi thành công');
         this.appPaymentComponent.onSearchPayments();
       })
       .catch((error) => {

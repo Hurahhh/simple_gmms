@@ -47,7 +47,7 @@
       <th nzAlign="center" nzWidth="50px">STT</th>
       <th
         nzAlign="center"
-        nzWidth="200px"
+        nzWidth="150px"
         [nzShowFilter]="columnConfigs['creatorName'].showFilter"
         [nzFilterMultiple]="columnConfigs['creatorName'].filterMultiple"
         [nzFilters]="columnConfigs['creatorName'].filterOptions"
@@ -62,7 +62,7 @@
       </th>
       <th
         nzAlign="center"
-        nzWidth="200px"
+        nzWidth="150px"
         [nzShowFilter]="columnConfigs['createdAt'].showFilter"
         [nzFilterMultiple]="columnConfigs['createdAt'].filterMultiple"
         [nzFilters]="columnConfigs['createdAt'].filterOptions"
@@ -204,7 +204,7 @@
             <th nzAlign="center" nzWidth="50px">STT</th>
             <th
               nzAlign="center"
-              nzWidth="200px"
+              nzWidth="150px"
               [nzShowFilter]="tablePaymentForSettleColumnConfigs['creatorName'].showFilter"
               [nzFilterMultiple]="tablePaymentForSettleColumnConfigs['creatorName'].filterMultiple"
               [nzFilters]="tablePaymentForSettleColumnConfigs['creatorName'].filterOptions"
@@ -219,7 +219,7 @@
             </th>
             <th
               nzAlign="center"
-              nzWidth="200px"
+              nzWidth="150px"
               [nzShowFilter]="tablePaymentForSettleColumnConfigs['createdAt'].showFilter"
               [nzFilterMultiple]="tablePaymentForSettleColumnConfigs['createdAt'].filterMultiple"
               [nzFilters]="tablePaymentForSettleColumnConfigs['createdAt'].filterOptions"
@@ -234,7 +234,7 @@
             </th>
             <th
               nzAlign="center"
-              nzWidth="200px"
+              nzWidth="150px"
               [nzShowFilter]="tablePaymentForSettleColumnConfigs['paymentAt'].showFilter"
               [nzFilterMultiple]="tablePaymentForSettleColumnConfigs['paymentAt'].filterMultiple"
               [nzFilters]="tablePaymentForSettleColumnConfigs['paymentAt'].filterOptions"
@@ -263,6 +263,7 @@
               Tổng tiền
             </th>
             <th nzAlign="center" nzWidth="150px">Trạng thái</th>
+            <th nzAlign="center" nzWidth="150px">Người sửa</th>
           </tr>
           </thead>
 
@@ -288,6 +289,7 @@
                 <nz-tag [nzColor]="paymentTag.color">{{ paymentTag.text }}</nz-tag>
               </ng-container>
             </td>
+            <td nzAlign="center">{{ data.updatorName }}</td>
           </tr>
           </tbody>
         </nz-table>
@@ -301,7 +303,7 @@
       nzType="primary"
       (click)="onGenerateBill()"
       [nzLoading]="isSavingBill"
-      [disabled]="tablePaymentForSettleRows.length <= 0 || isLoadingTablePaymentForSettle || paymentForSettleChecks.indexOf(true) == -1"
+      [disabled]="tablePaymentForSettleRows.length <= 0 || tablePaymentForSettle.data.length <= 0 || isLoadingTablePaymentForSettle || paymentForSettleChecks.indexOf(true) == -1"
     >
       Xem trước
     </button>
