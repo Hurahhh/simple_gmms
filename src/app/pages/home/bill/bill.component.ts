@@ -142,7 +142,6 @@ export class BillComponent {
     const _payments = this.tablePaymentForSettle.data.filter(
       (p, i) => this.paymentForSettleChecks[i]
     );
-    console.log(_payments);
     const _payFromDate = startOfDay(this.modalForm.value.payFromDate);
     const _payToDate = endOfDay(this.modalForm.value.payToDate);
     this.wantGenerateBill.emit({

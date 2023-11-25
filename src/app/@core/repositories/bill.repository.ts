@@ -107,27 +107,33 @@ export class BillRepository implements BaseRepository<Bill> {
       await this.addAsync(bill);
 
       // update payment status
+      const b = writeBatch(this.fs);
       const paymentColRef = collection(
         this.fs,
         PaymentRepository.COLLECTION_NAME
       );
-      const _query = query(paymentColRef, where('id', 'in', bill.paymentIds));
-      const docsSnap = await getDocs(_query);
-      if (docsSnap.empty) {
-        throw new Error('Link payments is empty');
-      }
-      const payments = docsSnap.docs.map((d) => d.data() as Payment);
 
-      const b = writeBatch(this.fs);
-      payments.forEach((payment) => {
-        let status = PAYMENT_STATUS.SETTLED;
-        if (payment.status == PAYMENT_STATUS.SETTLED) {
-          status = PAYMENT_STATUS.DUPPLICATE_SETTLED;
+      const CHUNK_SIZE = 30;
+      const NUM_CHUNKS = bill.paymentIds.length / CHUNK_SIZE + 1;
+      for (let chunk = 1; chunk <= NUM_CHUNKS; chunk++) {
+        const pIds = bill.paymentIds.slice((chunk - 1) * CHUNK_SIZE, chunk * CHUNK_SIZE);
+        const _query = query(paymentColRef, where('id', 'in', pIds));
+        const docsSnap = await getDocs(_query);
+        if (docsSnap.empty) {
+          throw new Error('Link payments is empty');
         }
-        b.update(doc(this.fs, PaymentRepository.COLLECTION_NAME, payment.id!), {
-          status: status,
+        const payments = docsSnap.docs.map((d) => d.data() as Payment);
+
+        payments.forEach((payment) => {
+          let status = PAYMENT_STATUS.SETTLED;
+          if (payment.status == PAYMENT_STATUS.SETTLED) {
+            status = PAYMENT_STATUS.DUPPLICATE_SETTLED;
+          }
+          b.update(doc(this.fs, PaymentRepository.COLLECTION_NAME, payment.id!), {
+            status: status,
+          });
         });
-      });
+      }
 
       // finish
       await b.commit();
